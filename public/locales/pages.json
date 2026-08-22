@@ -1,0 +1,39 @@
+{
+  "pages": {
+    "en": {
+      " — Auftrag überfällig seit {0}.": " — Order overdue by {0}.",
+      " — {0} Aufträge überfällig.": " — {0} orders overdue.",
+      "Alle Aufträge im Blick.": "All orders at a glance.",
+      "Alle Ersatzteile gut vorrätig.": "All spare parts well stocked.",
+      "Als abgeholt markieren": "Mark as Picked Up",
+      "Als fertig markieren": "Mark as Done",
+      "Angenommen": "Accepted",
+      "Auftrag": "Order",
+      "Bald fällig": "Due Soon",
+      "Bestand": "Stock",
+      "Ersatzteil": "Spare Part",
+      "Ersatzteil anlegen": "Add Spare Part",
+      "Ersatzteile — Tiefstand": "Spare Parts — Low Stock",
+      "Ersten Auftrag anlegen": "Create First Order",
+      "Fahrrad von {0} ist fertig — Kunde benachrichtigen?": "Bike from {0} is ready — notify customer?",
+      "Fertig": "Done",
+      "Fällig: {0}": "Due: {0}",
+      "Fällig: {0} ⚠": "Due: {0} ⚠",
+      "Heute fällig": "Due Today",
+      "In Arbeit": "In Progress",
+      "In Arbeit setzen": "Set In Progress",
+      "In Arbeit: {0}.": "In Progress: {0}.",
+      "Kein Termin in den nächsten 3 Tagen.": "No appointments in the next 3 days.",
+      "Leg den ersten Auftrag an, um loszulegen.": "Create your first order to get started.",
+      "Neuer Auftrag": "New Order",
+      "Nicht vorrätig": "Out of Stock",
+      "Noch keine Aufträge — leg den ersten an.": "No orders yet — create the first one.",
+      "Noch keine Reparaturaufträge": "No repair orders yet",
+      "Noch {0} Stück": "{0} remaining",
+      "Status auf {0} gesetzt": "Status set to {0}",
+      "{0} Fahrräder fertig zur Abholung.": "{0} bikes ready for pickup.",
+      "Überfällig": "Overdue"
+    }
+  },
+  "v": 1
+}

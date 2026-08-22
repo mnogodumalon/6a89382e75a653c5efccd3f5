@@ -1,0 +1,1 @@
+Ich betreibe eine kleine Fahrradwerkstatt und brauche eine Verwaltung mit drei Bereichen: 1) Kunden mit Vorname, Nachname, Telefonnummer und E-Mail. 2) Reparaturaufträge mit Auswahl des Kunden, Fahrrad-Beschreibung, Problembeschreibung, Abgabedatum und Status (angenommen, in Arbeit, fertig, abgeholt). 3) Ersatzteile mit Bezeichnung, Lagerbestand und Preis in Euro.

@@ -1,0 +1,20 @@
+{
+  "KundenDialog.tsx": {
+    "vorname": "z. B. Max",
+    "nachname": "z. B. Müller",
+    "telefonnummer": "z. B. 030 12345678",
+    "email": "z. B. max@beispiel.de"
+  },
+  "ReparaturauftraegeDialog.tsx": {
+    "kunde": "Welcher Kunde bringt das Rad?",
+    "fahrrad_beschreibung": "z. B. Mountainbike Marke/Farbe",
+    "problembeschreibung": "Was ist kaputt? Geräusche, Verschleiß, Schaden...",
+    "abgabedatum": "Wann kann es abgeholt werden?",
+    "status": "z. B. Angenommen, In Arbeit"
+  },
+  "ErsatzteileDialog.tsx": {
+    "bezeichnung": "z. B. Bremsbelag Set",
+    "lagerbestand": "z. B. 12",
+    "preis": "z. B. 24,99"
+  }
+}
