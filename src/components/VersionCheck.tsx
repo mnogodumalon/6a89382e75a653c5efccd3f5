@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback, Fragment } from 'react';
+import { useState, useEffect, useCallback, useRef, Fragment } from 'react';
+import { toast } from 'sonner';
 import { IconRefresh, IconHistory, IconLoader, IconChevronDown, IconCheck, IconClock, IconArrowBackUp, IconSparkles, IconMessageCircle, IconGitBranch, IconArrowLeft, IconFlask } from '@tabler/icons-react';
 import {
   Dialog,
@@ -17,6 +18,14 @@ const UPDATE_ENDPOINT = '/claude/build/update';
 const DEPLOYMENTS_ENDPOINT = `/claude/build/deployments/${APPGROUP_ID}`;
 const ROLLBACK_ENDPOINT = '/claude/build/rollback';
 const VERSION_ENDPOINT = '/claude/version';
+const AGENT_STATE_ENDPOINT = `/claude/build/agent-state/${APPGROUP_ID}`;
+
+// Fremd-Build-Beobachtung (Editor-Save, Weiche, coalescte Nachbauten):
+// eng pollen solange ein Build läuft, sonst selten — der Endpoint ist billig,
+// aber ein stilles Dashboard braucht keine Frequenz.
+const BUILD_ACTIVE_POLL_MS = 5000;
+const BUILD_IDLE_POLL_MS = 45000;
+const BUILD_ERROR_POLL_MS = 60000;
 
 // Poll cadence after a deploy receipt: wait for S3 version.json to reflect
 // the expected codebase SHA before reloading. 30 s ceiling to avoid hanging
@@ -67,6 +76,7 @@ interface DeployedVersion {
   codebase?: string;
   deployed_at?: string;
   source?: string;
+  metadata_fingerprint?: string;
 }
 
 type Status = 'idle' | 'loading' | 'updating' | 'verifying' | 'rolling_back' | 'busy' | 'error';
@@ -164,6 +174,12 @@ export function VersionCheck() {
   // Belegtes Schreib-Lease: der Update-Wunsch wurde serverseitig vorgemerkt
   // ([BUSY]-Event mit queued=true) und läuft automatisch nach dem Build.
   const [busyAgeMin, setBusyAgeMin] = useState(1);
+  // Fremd-Build sichtbar machen: null = kein Build aktiv. Solange ein Build
+  // läuft, ERSETZT die Build-Karte den Update-Button — ein Klick würde
+  // ohnehin nur im Ein-Platz-Slot vorgemerkt.
+  const [buildPct, setBuildPct] = useState<number | null>(null);
+  const baselineRef = useRef<DeployedVersion | null>(null);
+  const freshNotified = useRef(false);
 
   const applyDeployed = useCallback((d: DeployedVersion, latest: string) => {
     setDeployedVersion(d.version || '');
@@ -197,11 +213,90 @@ export function VersionCheck() {
         const service = await serviceRes.json();
         setLatestVersion(service.version || '');
         applyDeployed(deployed, service.version || '');
+        // Baseline für die Frisch-Deploy-Erkennung: der Stand, mit dem DIESE
+        // Seite geladen wurde.
+        baselineRef.current = deployed;
         setStatus('idle');
       } catch { setStatus('idle'); }
     })();
     return () => { cancelled = true; };
   }, [applyDeployed]);
+
+  // Fremd-Builds beobachten (Editor-Save, Weiche, vorgemerkte Nachbauten):
+  // Build-Karte solange agent-state build_status=building meldet, danach —
+  // wenn version.json einen NEUEN codebase trägt — persistenter Toast mit
+  // „Neu laden". Auto-Reload NUR bei unsichtbarem Tab ohne offenen Dialog:
+  // niemandem wird die Seite unterm Formular weggezogen. Fail-silent: jeder
+  // Fetch-Fehler blendet die Karte aus und pollt langsamer.
+  useEffect(() => {
+    let cancelled = false;
+    let running = false;
+    let timer: number | undefined;
+
+    function notifyFresh(structureChanged: boolean) {
+      const dialogOpen = !!document.querySelector('[role="dialog"]');
+      if (document.hidden && !dialogOpen) {
+        window.location.reload();
+        return;
+      }
+      toast(t('vc_updated_toast'), {
+        description: structureChanged ? t('vc_updated_toast_desc') : undefined,
+        duration: Infinity,
+        action: { label: t('vc_updated_reload'), onClick: () => window.location.reload() },
+      });
+    }
+
+    async function tick() {
+      if (cancelled || running) return;
+      running = true;
+      let next = BUILD_IDLE_POLL_MS;
+      try {
+        const res = await fetch(AGENT_STATE_ENDPOINT, { credentials: 'include', cache: 'no-store' });
+        if (!res.ok) throw new Error(String(res.status));
+        const state: { build_status?: string | null; build_pct?: number | null } = await res.json();
+        if (state.build_status === 'building') {
+          setBuildPct(typeof state.build_pct === 'number' ? state.build_pct : 0);
+          next = BUILD_ACTIVE_POLL_MS;
+        } else {
+          setBuildPct(null);
+          if (!freshNotified.current && baselineRef.current?.codebase) {
+            const now = await fetchDeployedVersion();
+            if (now?.codebase && now.codebase !== baselineRef.current.codebase) {
+              freshNotified.current = true;
+              // Struktur-Hinweis nur bei ECHTEM Fingerprint-Wechsel: Alt-
+              // Dashboards (legacy-backfill) tragen noch keinen Fingerprint —
+              // undefined !== "…" wäre eine falsche Warnung.
+              notifyFresh(
+                !!baselineRef.current.metadata_fingerprint &&
+                !!now.metadata_fingerprint &&
+                now.metadata_fingerprint !== baselineRef.current.metadata_fingerprint,
+              );
+            }
+          }
+        }
+      } catch {
+        setBuildPct(null);
+        next = BUILD_ERROR_POLL_MS;
+      }
+      running = false;
+      if (!cancelled) timer = window.setTimeout(tick, next);
+    }
+
+    tick();
+    // Beim Zurückkehren in den Tab sofort prüfen statt aufs Intervall zu warten.
+    const onVisibility = () => {
+      if (!document.hidden && !running) {
+        window.clearTimeout(timer);
+        void tick();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, []);
 
   const loadDeployments = useCallback(async () => {
     if (deployments.length > 0) return;
@@ -380,8 +475,23 @@ export function VersionCheck() {
         <IconChevronDown size={13} className={`shrink-0 transition-transform ${showPanel ? 'rotate-180' : ''}`} />
       </button>
 
+      {/* Build-Karte: ein Fremd-Build läuft — ersetzt den Update-Button,
+          denn ein Update-Klick würde jetzt ohnehin nur vorgemerkt. */}
+      {buildPct !== null && !showPanel && (
+        <div className="mx-3 mt-1 px-3 py-2 w-[calc(100%-1.5rem)] rounded-lg text-xs font-medium text-[#2563eb] bg-secondary border border-[#bfdbfe]">
+          <div className="flex items-center gap-2">
+            <IconRefresh size={13} className="shrink-0 animate-spin motion-reduce:animate-none" />
+            <span className="flex-1 min-w-0 truncate">{t('vc_build_pill')}</span>
+            <span className="tabular-nums text-[#2563eb]/70">{buildPct}%</span>
+          </div>
+          <div className="mt-1.5 h-1 rounded-full bg-[#bfdbfe]/60 overflow-hidden">
+            <div className="h-full bg-[#2563eb] rounded-full transition-all duration-500" style={{ width: `${buildPct}%` }} />
+          </div>
+        </div>
+      )}
+
       {/* Update banner */}
-      {updateAvailable && !showPanel && (
+      {updateAvailable && !showPanel && buildPct === null && (
         <button
           onClick={() => setUpdateDialogOpen(true)}
           className="flex items-center gap-2 mx-3 mt-1 px-3 py-1.5 w-[calc(100%-1.5rem)] rounded-lg text-xs font-medium text-[#2563eb] bg-secondary border border-[#bfdbfe] hover:bg-[#dbeafe] transition-colors"
@@ -413,8 +523,23 @@ export function VersionCheck() {
 
         return (
         <div className="mx-3 mt-1 mb-2 rounded-xl border border-sidebar-border bg-sidebar overflow-hidden">
+          {/* Build-Karte im Panel: läuft ein Build, ist sie das oberste
+              Element und der Update-Button bleibt unterdrückt. */}
+          {buildPct !== null && !selectedBranch && (
+            <div className="w-full px-3 py-2 text-xs font-medium text-[#2563eb] bg-secondary/50 border-b border-sidebar-border">
+              <div className="flex items-center gap-2">
+                <IconRefresh size={13} className="shrink-0 animate-spin motion-reduce:animate-none" />
+                <span className="flex-1 min-w-0 truncate">{t('vc_build_pill')}</span>
+                <span className="tabular-nums text-[#2563eb]/70">{buildPct}%</span>
+              </div>
+              <div className="mt-1.5 h-1 rounded-full bg-[#bfdbfe]/60 overflow-hidden">
+                <div className="h-full bg-[#2563eb] rounded-full transition-all duration-500" style={{ width: `${buildPct}%` }} />
+              </div>
+            </div>
+          )}
+
           {/* Update button at top */}
-          {updateAvailable && !selectedBranch && (
+          {updateAvailable && !selectedBranch && buildPct === null && (
             <button
               onClick={() => setUpdateDialogOpen(true)}
               className="flex items-center gap-2 w-full px-3 py-2 text-xs font-medium text-[#2563eb] bg-secondary/50 hover:bg-secondary border-b border-sidebar-border transition-colors"
