@@ -38,6 +38,7 @@ export interface Kunden {
     nachname?: string;
     telefonnummer?: string;
     email?: string;
+    stammkunde?: boolean;
   };
 }
 
@@ -105,6 +106,7 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'nachname': 'string/text',
     'telefonnummer': 'string/tel',
     'email': 'string/email',
+    'stammkunde': 'bool',
   },
   'reparaturauftraege': {
     'kostenvoranschlag': 'number',

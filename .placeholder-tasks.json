@@ -51,6 +51,12 @@
             "label": "E-Mail-Adresse",
             "type": "string/email",
             "required": false
+          },
+          {
+            "key": "stammkunde",
+            "label": "Stammkunde",
+            "type": "bool",
+            "required": false
           }
         ]
       }

@@ -100,6 +100,7 @@ export default function KundenDetailPage() {
         <RecordField label={fieldLabel('kunden', 'nachname')} value={record.fields.nachname} format="text" />
         <RecordField label={fieldLabel('kunden', 'telefonnummer')} value={record.fields.telefonnummer} format="text" />
         <RecordField label={fieldLabel('kunden', 'email')} value={record.fields.email} format="email" />
+        <RecordField label={fieldLabel('kunden', 'stammkunde')} value={record.fields.stammkunde} format="bool" />
       </RecordSection>
 
       <RecordAttachments appId={APP_IDS.KUNDEN} recordId={record.record_id} />

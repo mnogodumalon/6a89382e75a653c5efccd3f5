@@ -504,7 +504,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird
   // beim Render-Walk gefiltert auf die in der computed-Formel tatsächlich
   // referenzierten lookupKeys (siehe applookupRefs unten).
-  const APPLOOKUP_LABELS: Record<string, Record<string, string>> = {"kunde": {"vorname": "Vorname", "nachname": "Nachname", "telefonnummer": "Telefonnummer", "email": "E-Mail-Adresse"}};
+  const APPLOOKUP_LABELS: Record<string, Record<string, string>> = {"kunde": {"vorname": "Vorname", "nachname": "Nachname", "telefonnummer": "Telefonnummer", "email": "E-Mail-Adresse", "stammkunde": "Stammkunde"}};
   const inputFields = useMemo(() => flattenFieldOrder(orderedFields), [orderedFieldsKey]);
   const backendFieldSet = useMemo(() => new Set(inputFields), [inputFields.join(',')]);
   const virtualComputed = useMemo(

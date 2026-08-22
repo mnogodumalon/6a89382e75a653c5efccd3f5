@@ -41,6 +41,7 @@ const KUNDEN_FIELDS = [
   { key: 'nachname', label: 'Nachname', type: 'string/text' },
   { key: 'telefonnummer', label: 'Telefonnummer', type: 'string/tel' },
   { key: 'email', label: 'E-Mail-Adresse', type: 'string/email' },
+  { key: 'stammkunde', label: 'Stammkunde', type: 'bool' },
 ];
 const REPARATURAUFTRAEGE_FIELDS = [
   { key: 'kostenvoranschlag', label: 'Kostenvoranschlag (€)', type: 'number' },

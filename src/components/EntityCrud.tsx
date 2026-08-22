@@ -39,7 +39,7 @@
  *
  * Overlay content per entity (the host renders these — you never compose
  * Details blocks yourself):
- *   kunden: vorname, nachname, telefonnummer, email  ·  ← reparaturauftraege (list + contextual +)
+ *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
  *   ersatzteile: bezeichnung, lagerbestand, preis
  */

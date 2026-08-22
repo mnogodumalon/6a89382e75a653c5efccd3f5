@@ -3,10 +3,10 @@
   "changes": [
     {
       "kind": "field_added",
-      "entity": "reparaturauftraege",
-      "field": "kostenvoranschlag",
-      "fulltype": "number",
-      "label": "Kostenvoranschlag (€)"
+      "entity": "kunden",
+      "field": "stammkunde",
+      "fulltype": "bool",
+      "label": "Stammkunde"
     }
   ],
   "counts": {

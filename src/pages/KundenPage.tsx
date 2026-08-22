@@ -145,6 +145,12 @@ export default function KundenPage() {
                   {sortKey === 'email' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
                 </span>
               </TableHead>
+              <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('stammkunde')}>
+                <span className="inline-flex items-center gap-1">
+                  {fieldLabel('kunden', 'stammkunde')}
+                  {sortKey === 'stammkunde' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
+                </span>
+              </TableHead>
               <TableHead className="w-24 uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -155,6 +161,7 @@ export default function KundenPage() {
                 <TableCell>{record.fields.nachname ?? '—'}</TableCell>
                 <TableCell>{record.fields.telefonnummer ?? '—'}</TableCell>
                 <TableCell>{record.fields.email ?? '—'}</TableCell>
+                <TableCell><span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${record.fields.stammkunde ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>{record.fields.stammkunde ? t('yes') : t('no')}</span></TableCell>
                 <TableCell>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" onClick={() => setEditingRecord(record)}>
@@ -169,7 +176,7 @@ export default function KundenPage() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-16 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-16 text-muted-foreground">
                   {search ? t('no_results') : t('no_data_yet', { entity: appLabel('kunden') })}
                 </TableCell>
               </TableRow>

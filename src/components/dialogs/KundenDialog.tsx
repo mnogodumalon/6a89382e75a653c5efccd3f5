@@ -219,7 +219,7 @@ export function KundenDialog({ open, onClose, onSubmit, defaultValues, recordId,
         }
       }
       const photoContext = contextParts.length ? contextParts.join('\n') : undefined;
-      const schema = `{\n  "vorname": string | null, // Vorname\n  "nachname": string | null, // Nachname\n  "telefonnummer": string | null, // Telefonnummer\n  "email": string | null, // E-Mail-Adresse\n}`;
+      const schema = `{\n  "vorname": string | null, // Vorname\n  "nachname": string | null, // Nachname\n  "telefonnummer": string | null, // Telefonnummer\n  "email": string | null, // E-Mail-Adresse\n  "stammkunde": boolean | null, // Stammkunde\n}`;
       const raw = await extractFromInput<Record<string, unknown>>(schema, {
         dataUri: uri,
         userText: aiText.trim() || undefined,
@@ -333,6 +333,19 @@ export function KundenDialog({ open, onClose, onSubmit, defaultValues, recordId,
         />
       </div>
     ),
+    'stammkunde': (
+      <div key="stammkunde" className="space-y-1.5">
+        <Label htmlFor="stammkunde">{fieldLabel('kunden', 'stammkunde')}</Label>
+        <div className="flex items-center gap-2 pt-1">
+          <Checkbox
+            id="stammkunde"
+            checked={!!fields.stammkunde}
+            onCheckedChange={(v) => setFields(f => ({ ...f, stammkunde: !!v }))}
+          />
+          <Label htmlFor="stammkunde" className="font-normal">{fieldLabel('kunden', 'stammkunde')}</Label>
+        </div>
+      </div>
+    ),
   };
   const orderedFields = applyFieldOrder(Object.keys(fieldBlocks), formEnhancements.fieldOrder);
   const orderedFieldsKey = orderedFields.map((it) => typeof it === 'string' ? it : it.row.join('+')).join(',');
@@ -347,7 +360,7 @@ export function KundenDialog({ open, onClose, onSubmit, defaultValues, recordId,
   //     kein passendes Backend-Feld in orderedFields) erscheinen NICHT als
   //     Input, sondern unten als kompakte 'Berechnungen'-Übersicht oder als
   //     Inline-Hint unter dem letzten beitragenden Input.
-  const FIELD_LABELS: Record<string, string> = {"vorname": "Vorname", "nachname": "Nachname", "telefonnummer": "Telefonnummer", "email": "E-Mail-Adresse"};
+  const FIELD_LABELS: Record<string, string> = {"vorname": "Vorname", "nachname": "Nachname", "telefonnummer": "Telefonnummer", "email": "E-Mail-Adresse", "stammkunde": "Stammkunde"};
   const CURRENCY_KEYS = new Set<string>([]);
   // Applookup-Referenz-Labels: pro applookup-Feld in dieser Form (ownKey)
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird

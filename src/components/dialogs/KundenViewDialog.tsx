@@ -50,6 +50,14 @@ export function KundenViewDialog({ open, onClose, record, onEdit }: KundenViewDi
             <Label className="text-xs text-muted-foreground">{fieldLabel('kunden', 'email')}</Label>
             <p className="text-sm">{record.fields.email ?? '—'}</p>
           </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{fieldLabel('kunden', 'stammkunde')}</Label>
+            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+              record.fields.stammkunde ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+            }`}>
+              {record.fields.stammkunde ? t('yes') : t('no')}
+            </span>
+          </div>
           <div className="pt-2 border-t border-border">
             <AttachmentsSection appId={APP_IDS.KUNDEN} recordId={record.record_id} readOnly />
           </div>

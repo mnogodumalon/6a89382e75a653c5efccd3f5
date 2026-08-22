@@ -870,7 +870,8 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "vorname": "Vorname",
           "nachname": "Nachname",
           "telefonnummer": "Telefonnummer",
-          "email": "E-Mail-Adresse"
+          "email": "E-Mail-Adresse",
+          "stammkunde": "Stammkunde"
         },
         "lookups": {}
       },
@@ -907,7 +908,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
     }
   },
   "en": {
-    "appgroup": "Bicycle Workshop Management",
+    "appgroup": "Bike Workshop Management",
     "apps": {
       "kunden": {
         "name": "Customers",
@@ -916,7 +917,8 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "vorname": "First Name",
           "nachname": "Last Name",
           "telefonnummer": "Phone Number",
-          "email": "Email Address"
+          "email": "Email Address",
+          "stammkunde": "Regular Customer"
         },
         "lookups": {}
       },
@@ -926,7 +928,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "fields": {
           "kostenvoranschlag": "Cost Estimate (€)",
           "kunde": "Customer",
-          "fahrrad_beschreibung": "Bicycle Description",
+          "fahrrad_beschreibung": "Bike Description",
           "problembeschreibung": "Problem Description",
           "abgabedatum": "Drop-off Date",
           "status": "Status"

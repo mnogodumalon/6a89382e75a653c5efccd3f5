@@ -24,7 +24,7 @@ There is NO `@/config/appIds`, no `@/config/lookupOptions` and no
 `@/lib/urlUtils` — APP_IDS and LOOKUP_OPTIONS come from `@/types/app`,
 createRecordUrl from the service. Note the lowercase `l` in the service path.
 
-- Kunden (kunden): vorname![string/text], nachname![string/text], telefonnummer[string/tel], email[string/email]
+- Kunden (kunden): vorname![string/text], nachname![string/text], telefonnummer[string/tel], email[string/email], stammkunde[bool]
   ⚙ getKunden() · getKundenEntry(id) · createKundenEntry(fields) · updateKundenEntry(id, fields) · deleteKundenEntry(id)
 - Reparaturaufträge (reparaturauftraege): kostenvoranschlag[number], kunde![applookup/select], fahrrad_beschreibung![string/text], problembeschreibung![string/textarea], abgabedatum![date/date], status![lookup/radio: angenommen|in_arbeit|fertig|abgeholt]
   ⚙ getReparaturauftraege() · getReparaturauftraegeEntry(id) · createReparaturauftraegeEntry(fields) · updateReparaturauftraegeEntry(id, fields) · deleteReparaturauftraegeEntry(id)

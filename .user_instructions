@@ -1,3 +1,5 @@
 Ich betreibe eine kleine Fahrradwerkstatt und brauche eine Verwaltung mit drei Bereichen: 1) Kunden mit Vorname, Nachname, Telefonnummer und E-Mail. 2) Reparaturaufträge mit Auswahl des Kunden, Fahrrad-Beschreibung, Problembeschreibung, Abgabedatum und Status (angenommen, in Arbeit, fertig, abgeholt). 3) Ersatzteile mit Bezeichnung, Lagerbestand und Preis in Euro.
 
 Füge bei den Reparaturaufträgen ein optionales Feld "Kostenvoranschlag in Euro" hinzu. Ändere sonst nichts an der Struktur.
+
+Füge bei den Kunden ein optionales Ja/Nein-Feld "Stammkunde" hinzu. Ändere sonst nichts an der Struktur.
