@@ -8,7 +8,7 @@
  *   const crud = useEntityCrud(data, {
  *     // optional — the ONE semantic slot on the overlay: the record's next
  *     // workflow step. Return undefined for types without one.
- *     footer: (top) => top.type === 'kunden'
+ *     footer: (top) => top.type === 'leihraeder'
  *       ? { label: …, onClick: () => … }
  *       : undefined,
  *   });
@@ -16,14 +16,14 @@
  *   `top.type` is the SAME camelCase key as `crud.<entity>` — one spelling
  *   per entity, everywhere in this API.
  *   …
- *   crud.kunden.openCreate({ …defaults })   // create dialog, prefilled — defaults are
+ *   crud.leihraeder.openCreate({ …defaults })   // create dialog, prefilled — defaults are
  *                                       // shape-tolerant: bare lookup keys / record ids are fine
- *   crud.kunden.openEdit(record)            // edit dialog (recordId + defaults wired)
- *   crud.kunden.openDetail(record)          // record overlay — pass the RAW record,
+ *   crud.leihraeder.openEdit(record)            // edit dialog (recordId + defaults wired)
+ *   crud.leihraeder.openDetail(record)          // record overlay — pass the RAW record,
  *                                       // enrichment is resolved inside
  *   crud.overlay                         // RecordOverlayStack<OverlayItem> for drills:
  *                                       // push / pop / replace / close
- *   crud.enriched.kunden              // the display-ready array for EVERY entity —
+ *   crud.enriched.leihraeder              // the display-ready array for EVERY entity —
  *                                       // Enriched* where relations exist, the raw array
  *                                       // otherwise. Reuse these; never call enrich*()
  *                                       // in the page, and never guess which entity has
@@ -39,21 +39,24 @@
  *
  * Overlay content per entity (the host renders these — you never compose
  * Details blocks yourself):
- *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← reparaturauftraege (list + contextual +)
+ *   leihraeder: rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden
+ *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
  *   ersatzteile: bezeichnung, lagerbestand, preis, mindestbestand
  */
 import { useState, useMemo, type ReactNode } from 'react';
-import type { Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { LivingAppsService, createRecordUrl } from '@/services/livingAppsService';
-import { enrichReparaturauftraege } from '@/lib/enrich';
-import type { EnrichedReparaturauftraege } from '@/types/enriched';
+import { enrichLeihraeder, enrichReparaturauftraege } from '@/lib/enrich';
+import type { EnrichedLeihraeder, EnrichedReparaturauftraege } from '@/types/enriched';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import {
   useRecordOverlayStack, RecordOverlayHost, RecordHeader,
   type RecordOverlayStack,
 } from '@/components/widgets/RecordView';
+import { LeihraederDialog, type LeihraederDialogDefaults } from '@/components/dialogs/LeihraederDialog';
+import { LeihraederDetails } from '@/components/details/LeihraederDetails';
 import { KundenDialog, type KundenDialogDefaults } from '@/components/dialogs/KundenDialog';
 import { KundenDetails } from '@/components/details/KundenDetails';
 import { ReparaturauftraegeDialog, type ReparaturauftraegeDialogDefaults } from '@/components/dialogs/ReparaturauftraegeDialog';
@@ -69,6 +72,7 @@ import { formatDate } from '@/lib/formatters';
 // flows: Enriched* where enrichment exists, the raw record type otherwise.
 // The host resolves enrichment itself; pages pass raw records everywhere.
 export type OverlayItem =
+  | { type: 'leihraeder'; record: EnrichedLeihraeder }
   | { type: 'kunden'; record: Kunden }
   | { type: 'reparaturauftraege'; record: EnrichedReparaturauftraege }
   | { type: 'ersatzteile'; record: Ersatzteile };
@@ -97,21 +101,53 @@ export interface EntityCrud {
   overlay: RecordOverlayStack<OverlayItem>;
   /** Render ONCE at the end of the page JSX — all dialogs + the overlay host. */
   surfaces: ReactNode;
+  leihraeder: EntityCrudApi<Leihraeder, LeihraederDialogDefaults>;
   kunden: EntityCrudApi<Kunden, KundenDialogDefaults>;
   reparaturauftraege: EntityCrudApi<Reparaturauftraege, ReparaturauftraegeDialogDefaults>;
   ersatzteile: EntityCrudApi<Ersatzteile, ErsatzteileDialogDefaults>;
   /** The display-ready array per entity: Enriched* where an enrich function
    *  exists, the raw array otherwise. One key per entity so no page has to
    *  know which is which. Reuse these; never re-enrich in the page. */
-  enriched: { kunden: Kunden[]; reparaturauftraege: EnrichedReparaturauftraege[]; ersatzteile: Ersatzteile[] };
+  enriched: { leihraeder: EnrichedLeihraeder[]; kunden: Kunden[]; reparaturauftraege: EnrichedReparaturauftraege[]; ersatzteile: Ersatzteile[] };
 }
 
 export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions): EntityCrud {
   const overlay = useRecordOverlayStack<OverlayItem>();
+  const [leihraederDialog, setLeihraederDialog] = useState<{ defaults?: LeihraederDialogDefaults; editing?: Leihraeder } | null>(null);
   const [kundenDialog, setKundenDialog] = useState<{ defaults?: KundenDialogDefaults; editing?: Kunden } | null>(null);
   const [reparaturauftraegeDialog, setReparaturauftraegeDialog] = useState<{ defaults?: ReparaturauftraegeDialogDefaults; editing?: Reparaturauftraege } | null>(null);
   const [ersatzteileDialog, setErsatzteileDialog] = useState<{ defaults?: ErsatzteileDialogDefaults; editing?: Ersatzteile } | null>(null);
+  const enrichedLeihraeder = useMemo(() => enrichLeihraeder(data.leihraeder, { kundenMap: data.kundenMap }), [data.leihraeder, data.kundenMap]);
   const enrichedReparaturauftraege = useMemo(() => enrichReparaturauftraege(data.reparaturauftraege, { kundenMap: data.kundenMap }), [data.reparaturauftraege, data.kundenMap]);
+
+  function detailLeihraeder(record: Leihraeder, push = false) {
+    const rec = enrichedLeihraeder.find(r => r.record_id === record.record_id);
+    if (!rec) return;
+    const item: OverlayItem = { type: 'leihraeder', record: rec };
+    if (push) overlay.push(item); else overlay.replace(item);
+  }
+
+  async function submitLeihraeder(fields: Leihraeder['fields']) {
+    const editing = leihraederDialog?.editing;
+    if (editing) {
+      const prev = editing;
+      data.setLeihraeder(list => list.map(r => (r.record_id === editing.record_id ? { ...r, fields } : r)));
+      try {
+        await LivingAppsService.updateLeihraederEntry(editing.record_id, fields);
+      } catch (err) {
+        data.fetchAll();
+        throw err;
+      }
+      undoToast(`${appLabel('leihraeder')} — ${t('crud_updated')}`, async () => {
+        data.setLeihraeder(list => list.map(r => (r.record_id === prev.record_id ? prev : r)));
+        try { await LivingAppsService.updateLeihraederEntry(prev.record_id, prev.fields); } catch { data.fetchAll(); }
+      });
+    } else {
+      await LivingAppsService.createLeihraederEntry(fields);
+      undoToast(`${appLabel('leihraeder')} — ${t('crud_created')}`);
+      data.fetchAll();
+    }
+  }
 
   function detailKunden(record: Kunden, push = false) {
     const item: OverlayItem = { type: 'kunden', record };
@@ -198,6 +234,16 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
 
   const surfaces = (
     <>
+      <LeihraederDialog
+        open={leihraederDialog !== null}
+        onClose={() => setLeihraederDialog(null)}
+        onSubmit={submitLeihraeder}
+        defaultValues={leihraederDialog?.defaults}
+        recordId={leihraederDialog?.editing?.record_id}
+        kundenList={data.kunden}
+        enablePhotoScan={AI_PHOTO_SCAN['Leihraeder']}
+        enablePhotoLocation={AI_PHOTO_LOCATION['Leihraeder']}
+      />
       <KundenDialog
         open={kundenDialog !== null}
         onClose={() => setKundenDialog(null)}
@@ -232,12 +278,27 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
         size={options?.size}
         footer={options?.footer}
         render={(top) => {
+          if (top.type === 'leihraeder') {
+            return (
+              <>
+                <RecordHeader title={top.record.fields.rahmennummer ?? appLabel('leihraeder')} subtitle={undefined} />
+                <LeihraederDetails
+                  record={top.record}
+                  kundenList={data.kunden}
+                  onOpenKunden={(r) => detailKunden(r, true)}
+                />
+              </>
+            );
+          }
           if (top.type === 'kunden') {
             return (
               <>
                 <RecordHeader title={top.record.fields.vorname ?? appLabel('kunden')} subtitle={undefined} />
                 <KundenDetails
                   record={top.record}
+                  leihraederList={data.leihraeder}
+                  onOpenLeihraeder={(r) => detailLeihraeder(r, true)}
+                  onAddLeihraeder={() => setLeihraederDialog({ defaults: { verliehen_an: createRecordUrl(APP_IDS.KUNDEN, top.record.record_id) } })}
                   reparaturauftraegeList={data.reparaturauftraege}
                   onOpenReparaturauftraege={(r) => detailReparaturauftraege(r, true)}
                   onAddReparaturauftraege={() => setReparaturauftraegeDialog({ defaults: { kunde: createRecordUrl(APP_IDS.KUNDEN, top.record.record_id) } })}
@@ -271,6 +332,7 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
         }}
         onEdit={(top) => {
           overlay.close();
+          if (top.type === 'leihraeder') setLeihraederDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'kunden') setKundenDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'reparaturauftraege') setReparaturauftraegeDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'ersatzteile') setErsatzteileDialog({ editing: top.record, defaults: top.record.fields });
@@ -282,6 +344,11 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
   return {
     overlay,
     surfaces,
+    leihraeder: {
+      openCreate: (defaults?: LeihraederDialogDefaults) => setLeihraederDialog({ defaults }),
+      openEdit: (record: Leihraeder) => setLeihraederDialog({ editing: record, defaults: record.fields }),
+      openDetail: (record: Leihraeder) => detailLeihraeder(record, false),
+    },
     kunden: {
       openCreate: (defaults?: KundenDialogDefaults) => setKundenDialog({ defaults }),
       openEdit: (record: Kunden) => setKundenDialog({ editing: record, defaults: record.fields }),
@@ -297,6 +364,6 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
       openEdit: (record: Ersatzteile) => setErsatzteileDialog({ editing: record, defaults: record.fields }),
       openDetail: (record: Ersatzteile) => detailErsatzteile(record, false),
     },
-    enriched: { kunden: data.kunden, reparaturauftraege: enrichedReparaturauftraege, ersatzteile: data.ersatzteile },
+    enriched: { leihraeder: enrichedLeihraeder, kunden: data.kunden, reparaturauftraege: enrichedReparaturauftraege, ersatzteile: data.ersatzteile },
   };
 }

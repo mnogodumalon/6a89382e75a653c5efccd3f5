@@ -2,6 +2,80 @@
   "appgroup_id": "6a89382e75a653c5efccd3f5",
   "appgroup_name": "Fahrradwerkstatt Verwaltung",
   "apps": {
+    "leihraeder": {
+      "app_id": "6a893fdc641de8c47248bb48",
+      "name": "Leihräder",
+      "main": false,
+      "controls": {
+        "rahmennummer": {
+          "identifier": "rahmennummer",
+          "label": "Rahmennummer",
+          "type": "string",
+          "subtype": "text",
+          "fulltype": "string/text",
+          "description": "A string value not longer than 4000 characters (or `null`/`None`).",
+          "required": true,
+          "in_list": true,
+          "in_mobile_list": true,
+          "in_text": true,
+          "in_structured_search": null,
+          "in_fulltext_search": true,
+          "in_expert_search": true
+        },
+        "groesse": {
+          "identifier": "groesse",
+          "label": "Größe",
+          "type": "lookup",
+          "subtype": "select",
+          "fulltype": "lookup/select",
+          "description": "One selected option of multiple available options (or `null`/`None`).\n\nThe available options are defined in the `lookup_data` attribute of this control.\n\nThe field value will be the key in this `lookup_data` attribute (or `null`/`None`).\n\nDisplayed as single-select field in HTML pages.",
+          "required": false,
+          "in_list": true,
+          "in_mobile_list": true,
+          "in_text": true,
+          "in_structured_search": null,
+          "in_fulltext_search": true,
+          "in_expert_search": true,
+          "lookup_data": {
+            "s": "S",
+            "m": "M",
+            "l": "L"
+          }
+        },
+        "tagespreis": {
+          "identifier": "tagespreis",
+          "label": "Tagespreis (€)",
+          "type": "number",
+          "subtype": null,
+          "fulltype": "number",
+          "description": "A decimal number value (or `null`/`None`).",
+          "required": false,
+          "in_list": true,
+          "in_mobile_list": false,
+          "in_text": false,
+          "in_structured_search": null,
+          "in_fulltext_search": true,
+          "in_expert_search": true,
+          "precision": null
+        },
+        "verliehen_an": {
+          "identifier": "verliehen_an",
+          "label": "Verliehen an",
+          "type": "applookup",
+          "subtype": "select",
+          "fulltype": "applookup/select",
+          "description": "A reference to a LivingApp record from the target lookup app 'Kunden' with the id `6a89381649b1e4adfb583623` (or `null`/`None`).\n\nThe field value will be a valid record URL in the form `https://my.living-apps.de/rest/apps/6a89381649b1e4adfb583623/records/<record-id>` (or `null`/`None`).\n\nWhen writing, either pass a record URL through exactly as this API returned it, or send the portable relative form `/apps/6a89381649b1e4adfb583623/records/<record-id>`. Other equivalent record-URL forms are accepted as well.\n\nDisplayed as single-select field in HTML pages.",
+          "required": false,
+          "in_list": true,
+          "in_mobile_list": false,
+          "in_text": false,
+          "in_structured_search": null,
+          "in_fulltext_search": true,
+          "in_expert_search": true,
+          "lookup_app": "https://my.living-apps.de/rest/apps/6a89381649b1e4adfb583623"
+        }
+      }
+    },
     "kunden": {
       "app_id": "6a89381649b1e4adfb583623",
       "name": "Kunden",
@@ -262,6 +336,7 @@
   },
   "metadata": {
     "apps_list": [
+      "Leihräder",
       "Kunden",
       "Reparaturaufträge",
       "Ersatzteile"

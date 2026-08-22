@@ -23,6 +23,24 @@ export interface AttachmentInput {
   active?: boolean;
 }
 
+export interface Leihraeder {
+  record_id: string;
+  /** The API field. */
+  created_at: string;
+  updated_at: string | null;
+  /** Alias of created_at, filled by the read helpers. The API sends
+   *  snake_case only — reading `createdat` off a raw record yields
+   *  undefined, which type-checks and then crashes at runtime. */
+  createdat: string;
+  updatedat: string | null;
+  fields: {
+    rahmennummer?: string;
+    groesse?: LookupValue;
+    tagespreis?: number;
+    verliehen_an?: string; // applookup -> URL zu 'Kunden' Record
+  };
+}
+
 export interface Kunden {
   record_id: string;
   /** The API field. */
@@ -81,6 +99,7 @@ export interface Ersatzteile {
 }
 
 export const APP_IDS = {
+  LEIHRAEDER: '6a893fdc641de8c47248bb48',
   KUNDEN: '6a89381649b1e4adfb583623',
   REPARATURAUFTRAEGE: '6a893819520245c43dad9f5e',
   ERSATZTEILE: '6a8938194cf2973db816a8b8',
@@ -88,6 +107,9 @@ export const APP_IDS = {
 
 
 export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: string}[]>> = {
+  'leihraeder': {
+    groesse: [{ key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }, { key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }],
+  },
   'reparaturauftraege': {
     status: [{ key: "angenommen", get label() { return lookupLabel('reparaturauftraege', 'status', "angenommen") ?? "Angenommen"; } }, { key: "in_arbeit", get label() { return lookupLabel('reparaturauftraege', 'status', "in_arbeit") ?? "In Arbeit"; } }, { key: "fertig", get label() { return lookupLabel('reparaturauftraege', 'status', "fertig") ?? "Fertig"; } }, { key: "abgeholt", get label() { return lookupLabel('reparaturauftraege', 'status', "abgeholt") ?? "Abgeholt"; } }],
   },
@@ -102,6 +124,12 @@ export function lookupOption(app: string, field: string, key: string): LookupVal
 }
 
 export const FIELD_TYPES: Record<string, Record<string, string>> = {
+  'leihraeder': {
+    'rahmennummer': 'string/text',
+    'groesse': 'lookup/select',
+    'tagespreis': 'number',
+    'verliehen_an': 'applookup/select',
+  },
   'kunden': {
     'vorname': 'string/text',
     'nachname': 'string/text',
@@ -135,6 +163,7 @@ type StripLookup<T> = {
 };
 
 // Helper Types for creating new records (lookup fields as plain strings for API)
+export type CreateLeihraeder = StripLookup<Leihraeder['fields']>;
 export type CreateKunden = StripLookup<Kunden['fields']>;
 export type CreateReparaturauftraege = StripLookup<Reparaturauftraege['fields']>;
 export type CreateErsatzteile = StripLookup<Ersatzteile['fields']>;

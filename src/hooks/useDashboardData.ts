@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
 import { LivingAppsService } from '@/services/livingAppsService';
 import { t } from '@/i18n';
 
@@ -14,6 +14,7 @@ import { t } from '@/i18n';
  *  There is no other mechanism (no `__optimistic`, no `mutate`).
  */
 export function useDashboardData() {
+  const [leihraeder, setLeihraeder] = useState<Leihraeder[]>([]);
   const [kunden, setKunden] = useState<Kunden[]>([]);
   const [reparaturauftraege, setReparaturauftraege] = useState<Reparaturauftraege[]>([]);
   const [ersatzteile, setErsatzteile] = useState<Ersatzteile[]>([]);
@@ -23,11 +24,13 @@ export function useDashboardData() {
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const [kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+      const [leihraederData, kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+        LivingAppsService.getLeihraeder(),
         LivingAppsService.getKunden(),
         LivingAppsService.getReparaturauftraege(),
         LivingAppsService.getErsatzteile(),
       ]);
+      setLeihraeder(leihraederData);
       setKunden(kundenData);
       setReparaturauftraege(reparaturauftraegeData);
       setErsatzteile(ersatzteileData);
@@ -44,11 +47,13 @@ export function useDashboardData() {
   useEffect(() => {
     async function silentRefresh() {
       try {
-        const [kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+        const [leihraederData, kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+          LivingAppsService.getLeihraeder(),
           LivingAppsService.getKunden(),
           LivingAppsService.getReparaturauftraege(),
           LivingAppsService.getErsatzteile(),
         ]);
+        setLeihraeder(leihraederData);
         setKunden(kundenData);
         setReparaturauftraege(reparaturauftraegeData);
         setErsatzteile(ersatzteileData);
@@ -67,5 +72,5 @@ export function useDashboardData() {
     return m;
   }, [kunden]);
 
-  return { kunden, setKunden, reparaturauftraege, setReparaturauftraege, ersatzteile, setErsatzteile, loading, error, fetchAll, kundenMap };
+  return { leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, ersatzteile, setErsatzteile, loading, error, fetchAll, kundenMap };
 }

@@ -15,6 +15,11 @@ import { join } from 'node:path';
 // field name -> union of valid keys across ALL entities (a literal valid in
 // any entity passes — avoids false positives on shared field names).
 const VALID_KEYS = {
+  "groesse": [
+    "l",
+    "m",
+    "s"
+  ],
   "status": [
     "abgeholt",
     "angenommen",

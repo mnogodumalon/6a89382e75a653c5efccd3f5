@@ -28,6 +28,24 @@ export interface AttachmentInput {
   active?: boolean;
 }
 
+export interface Leihraeder {
+  record_id: string;
+  /** The API field. */
+  created_at: string;
+  updated_at: string | null;
+  /** Alias of created_at, filled by the read helpers. The API sends
+   *  snake_case only — reading `createdat` off a raw record yields
+   *  undefined, which type-checks and then crashes at runtime. */
+  createdat: string;
+  updatedat: string | null;
+  fields: {
+    rahmennummer?: string;
+    groesse?: LookupValue;
+    tagespreis?: number;
+    verliehen_an?: string; // applookup -> URL zu 'Kunden' Record
+  };
+}
+
 export interface Kunden {
   record_id: string;
   /** The API field. */
@@ -86,6 +104,7 @@ export interface Ersatzteile {
 }
 
 export const APP_IDS = {
+  LEIHRAEDER: '6a893fdc641de8c47248bb48',
   KUNDEN: '6a89381649b1e4adfb583623',
   REPARATURAUFTRAEGE: '6a893819520245c43dad9f5e',
   ERSATZTEILE: '6a8938194cf2973db816a8b8',
@@ -93,6 +112,9 @@ export const APP_IDS = {
 
 
 export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: string}[]>> = {
+  'leihraeder': {
+    groesse: [{ key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }, { key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }],
+  },
   'reparaturauftraege': {
     status: [{ key: "angenommen", get label() { return lookupLabel('reparaturauftraege', 'status', "angenommen") ?? "Angenommen"; } }, { key: "in_arbeit", get label() { return lookupLabel('reparaturauftraege', 'status', "in_arbeit") ?? "In Arbeit"; } }, { key: "fertig", get label() { return lookupLabel('reparaturauftraege', 'status', "fertig") ?? "Fertig"; } }, { key: "abgeholt", get label() { return lookupLabel('reparaturauftraege', 'status', "abgeholt") ?? "Abgeholt"; } }],
   },
@@ -107,6 +129,12 @@ export function lookupOption(app: string, field: string, key: string): LookupVal
 }
 
 export const FIELD_TYPES: Record<string, Record<string, string>> = {
+  'leihraeder': {
+    'rahmennummer': 'string/text',
+    'groesse': 'lookup/select',
+    'tagespreis': 'number',
+    'verliehen_an': 'applookup/select',
+  },
   'kunden': {
     'vorname': 'string/text',
     'nachname': 'string/text',
@@ -140,6 +168,7 @@ type StripLookup<T> = {
 };
 
 // Helper Types for creating new records (lookup fields as plain strings for API)
+export type CreateLeihraeder = StripLookup<Leihraeder['fields']>;
 export type CreateKunden = StripLookup<Kunden['fields']>;
 export type CreateReparaturauftraege = StripLookup<Reparaturauftraege['fields']>;
 export type CreateErsatzteile = StripLookup<Ersatzteile['fields']>;
@@ -150,7 +179,7 @@ export type CreateErsatzteile = StripLookup<Ersatzteile['fields']>;
 // AUTOMATICALLY GENERATED SERVICE
 import { APP_IDS, LOOKUP_OPTIONS, FIELD_TYPES } from '@/types/app';
 import { ensureUploadableImage } from '@/lib/ai';
-import type { Kunden, Reparaturauftraege, Ersatzteile, CreateKunden, CreateReparaturauftraege, CreateErsatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateErsatzteile } from '@/types/app';
 
 // Base Configuration
 const API_BASE_URL = 'https://my.living-apps.de/rest';
@@ -539,6 +568,32 @@ export async function getAppGroups(): Promise<AppGroupInfo[]> {
 }
 
 export class LivingAppsService {
+  // --- LEIHRAEDER ---
+  static async getLeihraeder(): Promise<Leihraeder[]> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LEIHRAEDER}/records`);
+    const records = Object.entries(data).map(([id, rec]: [string, any]) => ({
+      record_id: id, ...rec,
+      createdat: rec.created_at ?? '', updatedat: rec.updated_at ?? null,
+    })) as Leihraeder[];
+    return hydrateRecords(records, 'leihraeder');
+  }
+  static async getLeihraederEntry(id: string): Promise<Leihraeder | undefined> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LEIHRAEDER}/records/${id}`);
+    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Leihraeder;
+    return hydrateRecords([record], 'leihraeder')[0];
+  }
+  static async createLeihraederEntry(fields: CreateLeihraeder): Promise<MutationResult> {
+    const data = await callApi('POST', `/apps/${APP_IDS.LEIHRAEDER}/records`, { fields: cleanFieldsForApi(fields as any, 'leihraeder') });
+    return { ...data, record_id: data.id };
+  }
+  static async updateLeihraederEntry(id: string, fields: Partial<CreateLeihraeder>): Promise<MutationResult> {
+    const data = await callApi('PATCH', `/apps/${APP_IDS.LEIHRAEDER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'leihraeder') });
+    return { ...data, record_id: data.id };
+  }
+  static async deleteLeihraederEntry(id: string) {
+    return callApi('DELETE', `/apps/${APP_IDS.LEIHRAEDER}/records/${id}`);
+  }
+
   // --- KUNDEN ---
   static async getKunden(): Promise<Kunden[]> {
     const data = await callApi('GET', `/apps/${APP_IDS.KUNDEN}/records`);
@@ -634,6 +689,8 @@ import { Layout } from '@/components/Layout';
 import DashboardOverview from '@/pages/DashboardOverview';
 import AdminPage from '@/pages/AdminPage';
 import PublicPagesAdmin from '@/pages/PublicPagesAdmin';
+import LeihraederPage from '@/pages/LeihraederPage';
+import LeihraederDetailPage from '@/pages/LeihraederDetailPage';
 import KundenPage from '@/pages/KundenPage';
 import KundenDetailPage from '@/pages/KundenDetailPage';
 import ReparaturauftraegePage from '@/pages/ReparaturauftraegePage';
@@ -682,6 +739,8 @@ export default function App() {
               <Route path="public/:slug" element={<Suspense fallback={null}><PublicPage /></Suspense>} />
               <Route element={<Layout />}>
                 <Route index element={<DashboardOverview />} />
+                <Route path="leihraeder" element={<LeihraederPage />} />
+                <Route path="leihraeder/:id" element={<LeihraederDetailPage />} />
                 <Route path="kunden" element={<KundenPage />} />
                 <Route path="kunden/:id" element={<KundenDetailPage />} />
                 <Route path="reparaturauftraege" element={<ReparaturauftraegePage />} />
@@ -724,7 +783,7 @@ import { VersionCheck } from '@/components/VersionCheck';
 // src/i18n beobachtet das Attribut und LocaleGate remountet den Baum.
 import { t, appgroupLabel } from '@/i18n';
 
-const APP_ID = '6a89381649b1e4adfb583623';
+const APP_ID = '6a893fdc641de8c47248bb48';
 const APPGROUP_ID = '6a89382e75a653c5efccd3f5';
 
 const IS_EMBED = new URLSearchParams(window.location.search).has('embed') || window.navigator.userAgent.startsWith('LivingAppsMobile');
@@ -911,7 +970,7 @@ export function Layout() {
 ## src/hooks/useDashboardData.ts
 ```
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
 import { LivingAppsService } from '@/services/livingAppsService';
 import { t } from '@/i18n';
 
@@ -926,6 +985,7 @@ import { t } from '@/i18n';
  *  There is no other mechanism (no `__optimistic`, no `mutate`).
  */
 export function useDashboardData() {
+  const [leihraeder, setLeihraeder] = useState<Leihraeder[]>([]);
   const [kunden, setKunden] = useState<Kunden[]>([]);
   const [reparaturauftraege, setReparaturauftraege] = useState<Reparaturauftraege[]>([]);
   const [ersatzteile, setErsatzteile] = useState<Ersatzteile[]>([]);
@@ -935,11 +995,13 @@ export function useDashboardData() {
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const [kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+      const [leihraederData, kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+        LivingAppsService.getLeihraeder(),
         LivingAppsService.getKunden(),
         LivingAppsService.getReparaturauftraege(),
         LivingAppsService.getErsatzteile(),
       ]);
+      setLeihraeder(leihraederData);
       setKunden(kundenData);
       setReparaturauftraege(reparaturauftraegeData);
       setErsatzteile(ersatzteileData);
@@ -956,11 +1018,13 @@ export function useDashboardData() {
   useEffect(() => {
     async function silentRefresh() {
       try {
-        const [kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+        const [leihraederData, kundenData, reparaturauftraegeData, ersatzteileData] = await Promise.all([
+          LivingAppsService.getLeihraeder(),
           LivingAppsService.getKunden(),
           LivingAppsService.getReparaturauftraege(),
           LivingAppsService.getErsatzteile(),
         ]);
+        setLeihraeder(leihraederData);
         setKunden(kundenData);
         setReparaturauftraege(reparaturauftraegeData);
         setErsatzteile(ersatzteileData);
@@ -979,14 +1043,14 @@ export function useDashboardData() {
     return m;
   }, [kunden]);
 
-  return { kunden, setKunden, reparaturauftraege, setReparaturauftraege, ersatzteile, setErsatzteile, loading, error, fetchAll, kundenMap };
+  return { leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, ersatzteile, setErsatzteile, loading, error, fetchAll, kundenMap };
 }
 ```
 
 ## src/lib/enrich.ts
 ```
-import type { EnrichedReparaturauftraege } from '@/types/enriched';
-import type { Kunden, Reparaturauftraege } from '@/types/app';
+import type { EnrichedLeihraeder, EnrichedReparaturauftraege } from '@/types/enriched';
+import type { Kunden, Leihraeder, Reparaturauftraege } from '@/types/app';
 import { extractRecordId } from '@/services/livingAppsService';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -997,6 +1061,20 @@ function resolveDisplay(url: unknown, map: Map<string, any>, ...fields: string[]
   const r = map.get(id);
   if (!r) return '';
   return fields.map(f => String(r.fields[f] ?? '')).join(' ').trim();
+}
+
+interface LeihraederMaps {
+  kundenMap: Map<string, Kunden>;
+}
+
+export function enrichLeihraeder(
+  leihraeder: Leihraeder[],
+  maps: LeihraederMaps
+): EnrichedLeihraeder[] {
+  return leihraeder.map(r => ({
+    ...r,
+    verliehen_anName: resolveDisplay(r.fields.verliehen_an, maps.kundenMap, 'vorname', 'nachname'),
+  }));
 }
 
 interface ReparaturauftraegeMaps {

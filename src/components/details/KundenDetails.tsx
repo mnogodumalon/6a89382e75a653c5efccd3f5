@@ -1,4 +1,4 @@
-import type { Kunden, Reparaturauftraege } from '@/types/app';
+import type { Kunden, Leihraeder, Reparaturauftraege } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { extractRecordId } from '@/services/livingAppsService';
 import {
@@ -10,6 +10,12 @@ import { SatelliteSection } from '@/components/SatelliteSection';
 export interface KundenDetailsProps {
   /** Der Record — enriched oder roh; alle Felder werden hier gerendert. */
   record: Kunden;
+  /** 1:N „Leihräder" (verliehen_an): VOLLE Liste — der Block filtert auf diesen Record. */
+  leihraederList: Leihraeder[];
+  /** Zeilen-Klick → overlay.push auf das Leihraeder-Detail (nie der Edit-Dialog). */
+  onOpenLeihraeder: (record: Leihraeder) => void;
+  /** Kontextuelles „+": öffnet den Leihraeder-Dialog mit diesem Record vorgesetzt. */
+  onAddLeihraeder: () => void;
   /** 1:N „Reparaturaufträge" (kunde): VOLLE Liste — der Block filtert auf diesen Record. */
   reparaturauftraegeList: Reparaturauftraege[];
   /** Zeilen-Klick → overlay.push auf das Reparaturauftraege-Detail (nie der Edit-Dialog). */
@@ -20,6 +26,9 @@ export interface KundenDetailsProps {
 
 export function KundenDetails({
   record,
+  leihraederList,
+  onOpenLeihraeder,
+  onAddLeihraeder,
   reparaturauftraegeList,
   onOpenReparaturauftraege,
   onAddReparaturauftraege,
@@ -33,6 +42,15 @@ export function KundenDetails({
         <RecordField label={fieldLabel('kunden', 'email')} value={record.fields.email} format="email" />
         <RecordField label={fieldLabel('kunden', 'stammkunde')} value={record.fields.stammkunde} format="bool" />
       </RecordSection>
+
+      <SatelliteSection
+        title={appLabel('leihraeder')}
+        items={leihraederList.filter(r => extractRecordId(r.fields.verliehen_an) === record.record_id)}
+        map={r => ({ name: r.fields.rahmennummer ?? appLabel('leihraeder'), meta: undefined })}
+        onOpen={onOpenLeihraeder}
+        onAdd={onAddLeihraeder}
+        getKey={r => r.record_id}
+      />
 
       <SatelliteSection
         title={appLabel('reparaturauftraege')}

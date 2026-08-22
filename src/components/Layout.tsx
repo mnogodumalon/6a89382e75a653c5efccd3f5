@@ -14,7 +14,7 @@ import { VersionCheck } from '@/components/VersionCheck';
 // src/i18n beobachtet das Attribut und LocaleGate remountet den Baum.
 import { t, appgroupLabel } from '@/i18n';
 
-const APP_ID = '6a89381649b1e4adfb583623';
+const APP_ID = '6a893fdc641de8c47248bb48';
 const APPGROUP_ID = '6a89382e75a653c5efccd3f5';
 
 const IS_EMBED = new URLSearchParams(window.location.search).has('embed') || window.navigator.userAgent.startsWith('LivingAppsMobile');

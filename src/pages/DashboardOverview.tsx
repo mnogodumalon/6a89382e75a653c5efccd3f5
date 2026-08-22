@@ -34,6 +34,7 @@ export default function DashboardOverview() {
   const {
     reparaturauftraege, setReparaturauftraege,
     ersatzteile,
+    leihraeder,
     loading, error, fetchAll,
   } = data;
 
@@ -132,6 +133,10 @@ export default function DashboardOverview() {
 
   // Ersatzteile mit niedrigem Lagerbestand (≤5 Stück)
   const tiefstand = ersatzteile.filter(e => (e.fields.lagerbestand ?? 0) <= 5).sort((a, b) => (a.fields.lagerbestand ?? 0) - (b.fields.lagerbestand ?? 0));
+
+  // Leihräder
+  const leihraederVerliehen = leihraeder.filter(l => !!l.fields.verliehen_an);
+  const leihraederVerfuegbar = leihraeder.filter(l => !l.fields.verliehen_an);
 
   // KanbanColumns inside body (locale-aware getter)
   const COLUMNS = (LOOKUP_OPTIONS['reparaturauftraege']?.['status'] ?? []).map(o => ({ key: o.key, label: o.label })) as KanbanColumn[];
@@ -247,6 +252,18 @@ export default function DashboardOverview() {
               icon={<IconAlertTriangle size={16} />}
               tone={ueberfaellig.length > 0 ? 'destructive' : 'default'}
             />
+            <StatStripItem
+              title={tx('Leihräder verliehen')}
+              value={leihraederVerliehen.length}
+              icon={<IconBike size={16} />}
+              tone={leihraederVerliehen.length > 0 ? 'warning' : 'default'}
+            />
+            <StatStripItem
+              title={tx('Leihräder verfügbar')}
+              value={leihraederVerfuegbar.length}
+              icon={<IconBike size={16} />}
+              tone={leihraederVerfuegbar.length > 0 ? 'success' : 'default'}
+            />
           </StatStrip>
         }
         primary={
@@ -340,6 +357,33 @@ export default function DashboardOverview() {
               empty={{
                 text: tx('Alle Ersatzteile gut vorrätig.'),
                 action: { label: tx('Ersatzteil anlegen'), onClick: () => crud.ersatzteile.openCreate({}) },
+              }}
+            />
+            <WorkList
+              title={tx('Leihräder — Verliehen')}
+              items={leihraederVerliehen.map(l => ({
+                id: l.record_id,
+                title: l.fields.rahmennummer || tx('Leihrad'),
+                secondLine: (
+                  <>
+                    <span className="font-medium text-amber-600">{tx('Verliehen')}</span>
+                    {l.fields.tagespreis != null && (
+                      <span className="text-muted-foreground"> · {formatCurrency(l.fields.tagespreis)}/Tag</span>
+                    )}
+                  </>
+                ),
+                action: {
+                  label: tx('Ansehen'),
+                  onClick: () => crud.leihraeder.openDetail(l),
+                },
+              }))}
+              onItemClick={(id) => {
+                const l = leihraeder.find(x => x.record_id === id);
+                if (l) crud.leihraeder.openDetail(l);
+              }}
+              empty={{
+                text: tx('Alle Leihräder verfügbar.'),
+                action: { label: tx('Leihrad anlegen'), onClick: () => crud.leihraeder.openCreate({}) },
               }}
             />
           </>

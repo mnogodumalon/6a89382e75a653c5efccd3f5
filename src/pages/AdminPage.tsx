@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import type { Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
 import { LivingAppsService, extractRecordId, cleanFieldsForApi } from '@/services/livingAppsService';
+import { LeihraederDialog } from '@/components/dialogs/LeihraederDialog';
+import { LeihraederViewDialog } from '@/components/dialogs/LeihraederViewDialog';
 import { KundenDialog } from '@/components/dialogs/KundenDialog';
 import { KundenViewDialog } from '@/components/dialogs/KundenViewDialog';
 import { ReparaturauftraegeDialog } from '@/components/dialogs/ReparaturauftraegeDialog';
@@ -36,6 +38,12 @@ function fmtDate(d?: string) {
 // Field metadata per entity for bulk edit and column filters. `label` is the
 // BUILD-language fallback only — getFieldMeta() re-labels every entry (and every
 // lookup option) through the runtime catalog before anything renders it.
+const LEIHRAEDER_FIELDS = [
+  { key: 'rahmennummer', label: 'Rahmennummer', type: 'string/text' },
+  { key: 'groesse', label: 'Größe', type: 'lookup/select', options: [{ key: 's', label: 'S' }, { key: 'm', label: 'M' }, { key: 'l', label: 'L' }] },
+  { key: 'tagespreis', label: 'Tagespreis (€)', type: 'number' },
+  { key: 'verliehen_an', label: 'Verliehen an', type: 'applookup/select', targetEntity: 'kunden', targetAppId: 'KUNDEN', displayField: 'vorname' },
+];
 const KUNDEN_FIELDS = [
   { key: 'vorname', label: 'Vorname', type: 'string/text' },
   { key: 'nachname', label: 'Nachname', type: 'string/text' },
@@ -59,6 +67,7 @@ const ERSATZTEILE_FIELDS = [
 ];
 
 const ENTITY_TABS = [
+  { key: 'leihraeder', pascal: 'Leihraeder' },
   { key: 'kunden', pascal: 'Kunden' },
   { key: 'reparaturauftraege', pascal: 'Reparaturauftraege' },
   { key: 'ersatzteile', pascal: 'Ersatzteile' },
@@ -70,13 +79,15 @@ export default function AdminPage() {
   const data = useDashboardData();
   const { loading, error, fetchAll } = data;
 
-  const [activeTab, setActiveTab] = useState<EntityKey>('kunden');
+  const [activeTab, setActiveTab] = useState<EntityKey>('leihraeder');
   const [selectedIds, setSelectedIds] = useState<Record<EntityKey, Set<string>>>(() => ({
+    'leihraeder': new Set(),
     'kunden': new Set(),
     'reparaturauftraege': new Set(),
     'ersatzteile': new Set(),
   }));
   const [filters, setFilters] = useState<Record<EntityKey, Record<string, string>>>(() => ({
+    'leihraeder': {},
     'kunden': {},
     'reparaturauftraege': {},
     'ersatzteile': {},
@@ -94,6 +105,7 @@ export default function AdminPage() {
 
   const getRecords = useCallback((entity: EntityKey) => {
     switch (entity) {
+      case 'leihraeder': return (data as any).leihraeder as Leihraeder[] ?? [];
       case 'kunden': return (data as any).kunden as Kunden[] ?? [];
       case 'reparaturauftraege': return (data as any).reparaturauftraege as Reparaturauftraege[] ?? [];
       case 'ersatzteile': return (data as any).ersatzteile as Ersatzteile[] ?? [];
@@ -104,6 +116,9 @@ export default function AdminPage() {
   const getLookupLists = useCallback((entity: EntityKey) => {
     const lists: Record<string, any[]> = {};
     switch (entity) {
+      case 'leihraeder':
+        lists.kundenList = (data as any).kunden ?? [];
+        break;
       case 'reparaturauftraege':
         lists.kundenList = (data as any).kunden ?? [];
         break;
@@ -117,6 +132,10 @@ export default function AdminPage() {
     if (!id) return '—';
     const lists = getLookupLists(entity);
     void fieldKey; // ensure used for noUnusedParameters
+    if (entity === 'leihraeder' && fieldKey === 'verliehen_an') {
+      const match = (lists.kundenList ?? []).find((r: any) => r.record_id === id);
+      return match?.fields.vorname ?? '—';
+    }
     if (entity === 'reparaturauftraege' && fieldKey === 'kunde') {
       const match = (lists.kundenList ?? []).find((r: any) => r.record_id === id);
       return match?.fields.vorname ?? '—';
@@ -130,6 +149,7 @@ export default function AdminPage() {
   const getFieldMeta = useCallback((entity: EntityKey) => {
     const raw: any[] = (() => {
       switch (entity) {
+        case 'leihraeder': return LEIHRAEDER_FIELDS as any[];
         case 'kunden': return KUNDEN_FIELDS as any[];
         case 'reparaturauftraege': return REPARATURAUFTRAEGE_FIELDS as any[];
         case 'ersatzteile': return ERSATZTEILE_FIELDS as any[];
@@ -238,6 +258,11 @@ export default function AdminPage() {
 
   const getServiceMethods = useCallback((entity: EntityKey) => {
     switch (entity) {
+      case 'leihraeder': return {
+        create: (fields: any) => LivingAppsService.createLeihraederEntry(fields),
+        update: (id: string, fields: any) => LivingAppsService.updateLeihraederEntry(id, fields),
+        remove: (id: string) => LivingAppsService.deleteLeihraederEntry(id),
+      };
       case 'kunden': return {
         create: (fields: any) => LivingAppsService.createKundenEntry(fields),
         update: (id: string, fields: any) => LivingAppsService.updateKundenEntry(id, fields),
@@ -593,6 +618,17 @@ export default function AdminPage() {
         </Table>
       </div>
 
+      {(createEntity === 'leihraeder' || dialogState?.entity === 'leihraeder') && (
+        <LeihraederDialog
+          open={createEntity === 'leihraeder' || dialogState?.entity === 'leihraeder'}
+          onClose={() => { setCreateEntity(null); setDialogState(null); }}
+          onSubmit={dialogState?.entity === 'leihraeder' ? handleUpdate : (fields: any) => handleCreate('leihraeder', fields)}
+          defaultValues={dialogState?.entity === 'leihraeder' ? dialogState.record?.fields : undefined}
+          kundenList={(data as any).kunden ?? []}
+          enablePhotoScan={AI_PHOTO_SCAN['Leihraeder']}
+          enablePhotoLocation={AI_PHOTO_LOCATION['Leihraeder']}
+        />
+      )}
       {(createEntity === 'kunden' || dialogState?.entity === 'kunden') && (
         <KundenDialog
           open={createEntity === 'kunden' || dialogState?.entity === 'kunden'}
@@ -622,6 +658,15 @@ export default function AdminPage() {
           defaultValues={dialogState?.entity === 'ersatzteile' ? dialogState.record?.fields : undefined}
           enablePhotoScan={AI_PHOTO_SCAN['Ersatzteile']}
           enablePhotoLocation={AI_PHOTO_LOCATION['Ersatzteile']}
+        />
+      )}
+      {viewState?.entity === 'leihraeder' && (
+        <LeihraederViewDialog
+          open={viewState?.entity === 'leihraeder'}
+          onClose={() => setViewState(null)}
+          record={viewState?.record}
+          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'leihraeder', record: r }); }}
+          kundenList={(data as any).kunden ?? []}
         />
       )}
       {viewState?.entity === 'kunden' && (

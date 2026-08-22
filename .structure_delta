@@ -2,15 +2,13 @@
   "version": 1,
   "changes": [
     {
-      "kind": "field_added",
-      "entity": "ersatzteile",
-      "field": "mindestbestand",
-      "fulltype": "number",
-      "label": "Mindestbestand"
+      "kind": "entity_added",
+      "entity": "leihraeder",
+      "name": "Leihräder"
     }
   ],
   "counts": {
-    "field_added": 1
+    "entity_added": 1
   },
   "harmless_only": false
 }

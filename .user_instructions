@@ -3,3 +3,7 @@ Ich betreibe eine kleine Fahrradwerkstatt und brauche eine Verwaltung mit drei B
 Füge bei den Reparaturaufträgen ein optionales Feld "Kostenvoranschlag in Euro" hinzu. Ändere sonst nichts an der Struktur.
 
 Füge bei den Kunden ein optionales Ja/Nein-Feld "Stammkunde" hinzu. Ändere sonst nichts an der Struktur.
+
+Füge bei den Ersatzteilen ein optionales Zahlenfeld "Mindestbestand" hinzu. Ändere sonst nichts an der Struktur.
+
+Füge einen neuen Bereich "Leihräder" hinzu: Rahmennummer (Pflichtfeld), Größe (Auswahl: S, M, L), Tagespreis in Euro und "Verliehen an" als Auswahl eines Kunden. Ändere sonst nichts an den bestehenden Bereichen.

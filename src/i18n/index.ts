@@ -863,6 +863,23 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
   "de": {
     "appgroup": "Fahrradwerkstatt Verwaltung",
     "apps": {
+      "leihraeder": {
+        "name": "Leihräder",
+        "app_id": "6a893fdc641de8c47248bb48",
+        "fields": {
+          "rahmennummer": "Rahmennummer",
+          "groesse": "Größe",
+          "tagespreis": "Tagespreis (€)",
+          "verliehen_an": "Verliehen an"
+        },
+        "lookups": {
+          "groesse": {
+            "s": "S",
+            "m": "M",
+            "l": "L"
+          }
+        }
+      },
       "kunden": {
         "name": "Kunden",
         "app_id": "6a89381649b1e4adfb583623",
@@ -909,8 +926,25 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
     }
   },
   "en": {
-    "appgroup": "Bike Shop Management",
+    "appgroup": "Bicycle Workshop Management",
     "apps": {
+      "leihraeder": {
+        "name": "Rental Bikes",
+        "app_id": "6a893fdc641de8c47248bb48",
+        "fields": {
+          "rahmennummer": "Frame Number",
+          "groesse": "Size",
+          "tagespreis": "Daily Rate (€)",
+          "verliehen_an": "Rented To"
+        },
+        "lookups": {
+          "groesse": {
+            "s": "S",
+            "m": "M",
+            "l": "L"
+          }
+        }
+      },
       "kunden": {
         "name": "Customers",
         "app_id": "6a89381649b1e4adfb583623",

@@ -1,7 +1,7 @@
 // AUTOMATICALLY GENERATED SERVICE
 import { APP_IDS, LOOKUP_OPTIONS, FIELD_TYPES } from '@/types/app';
 import { ensureUploadableImage } from '@/lib/ai';
-import type { Kunden, Reparaturauftraege, Ersatzteile, CreateKunden, CreateReparaturauftraege, CreateErsatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateErsatzteile } from '@/types/app';
 
 // Base Configuration
 const API_BASE_URL = 'https://my.living-apps.de/rest';
@@ -390,6 +390,32 @@ export async function getAppGroups(): Promise<AppGroupInfo[]> {
 }
 
 export class LivingAppsService {
+  // --- LEIHRAEDER ---
+  static async getLeihraeder(): Promise<Leihraeder[]> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LEIHRAEDER}/records`);
+    const records = Object.entries(data).map(([id, rec]: [string, any]) => ({
+      record_id: id, ...rec,
+      createdat: rec.created_at ?? '', updatedat: rec.updated_at ?? null,
+    })) as Leihraeder[];
+    return hydrateRecords(records, 'leihraeder');
+  }
+  static async getLeihraederEntry(id: string): Promise<Leihraeder | undefined> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LEIHRAEDER}/records/${id}`);
+    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Leihraeder;
+    return hydrateRecords([record], 'leihraeder')[0];
+  }
+  static async createLeihraederEntry(fields: CreateLeihraeder): Promise<MutationResult> {
+    const data = await callApi('POST', `/apps/${APP_IDS.LEIHRAEDER}/records`, { fields: cleanFieldsForApi(fields as any, 'leihraeder') });
+    return { ...data, record_id: data.id };
+  }
+  static async updateLeihraederEntry(id: string, fields: Partial<CreateLeihraeder>): Promise<MutationResult> {
+    const data = await callApi('PATCH', `/apps/${APP_IDS.LEIHRAEDER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'leihraeder') });
+    return { ...data, record_id: data.id };
+  }
+  static async deleteLeihraederEntry(id: string) {
+    return callApi('DELETE', `/apps/${APP_IDS.LEIHRAEDER}/records/${id}`);
+  }
+
   // --- KUNDEN ---
   static async getKunden(): Promise<Kunden[]> {
     const data = await callApi('GET', `/apps/${APP_IDS.KUNDEN}/records`);
