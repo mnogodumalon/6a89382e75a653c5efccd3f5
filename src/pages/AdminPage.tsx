@@ -52,7 +52,6 @@ const KUNDEN_FIELDS = [
   { key: 'stammkunde', label: 'Stammkunde', type: 'bool' },
 ];
 const REPARATURAUFTRAEGE_FIELDS = [
-  { key: 'kostenvoranschlag', label: 'Kostenvoranschlag (€)', type: 'number' },
   { key: 'kunde', label: 'Kunde', type: 'applookup/select', targetEntity: 'kunden', targetAppId: 'KUNDEN', displayField: 'vorname' },
   { key: 'fahrrad_beschreibung', label: 'Fahrrad-Beschreibung', type: 'string/text' },
   { key: 'problembeschreibung', label: 'Problembeschreibung', type: 'string/textarea' },

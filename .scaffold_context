@@ -15,7 +15,7 @@ index.css is pre-generated with the shared design system. Do NOT edit it.
 src/config/ai-features.ts is editable — set AI_PHOTO_SCAN['Entity'] = true to enable photo scan in dialogs.
 NEVER use Bash cat/echo/heredoc for file operations — always use Read/Write/Edit tools.
 
-Generated 116 scaffold files:
+Generated 115 scaffold files:
   - src/App.tsx
   - src/i18n/index.ts
   - src/i18n/common.ts
@@ -52,7 +52,6 @@ Generated 116 scaffold files:
   - src/components/DatePicker.tsx
   - .placeholder-tasks.json
   - src/config/form-enhancements/types.ts
-  - src/config/form-enhancements/Leihraeder.ts
   - scripts/parse-formulas.mjs
   - scripts/apply-placeholders.mjs
   - src/config/intents.ts
@@ -270,7 +269,7 @@ contracts; Read one only if the contract below is insufficient.
  * Details blocks yourself):
  *   leihraeder: rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden
  *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
- *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
+ *   reparaturauftraege: kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
  *   ersatzteile: bezeichnung, lagerbestand, preis, mindestbestand
  */
 ```

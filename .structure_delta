@@ -2,13 +2,15 @@
   "version": 1,
   "changes": [
     {
-      "kind": "entity_added",
-      "entity": "leihraeder",
-      "name": "Leihräder"
+      "kind": "field_removed",
+      "entity": "reparaturauftraege",
+      "field": "kostenvoranschlag",
+      "fulltype": "number",
+      "label": "Kostenvoranschlag (€)"
     }
   ],
   "counts": {
-    "entity_added": 1
+    "field_removed": 1
   },
   "harmless_only": false
 }

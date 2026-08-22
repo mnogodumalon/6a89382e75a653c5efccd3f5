@@ -71,7 +71,6 @@ export interface Reparaturauftraege {
   createdat: string;
   updatedat: string | null;
   fields: {
-    kostenvoranschlag?: number;
     kunde?: string; // applookup -> URL zu 'Kunden' Record
     fahrrad_beschreibung?: string;
     problembeschreibung?: string;
@@ -138,7 +137,6 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'stammkunde': 'bool',
   },
   'reparaturauftraege': {
-    'kostenvoranschlag': 'number',
     'kunde': 'applookup/select',
     'fahrrad_beschreibung': 'string/text',
     'problembeschreibung': 'string/textarea',

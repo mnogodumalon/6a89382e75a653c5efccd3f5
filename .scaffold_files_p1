@@ -76,7 +76,6 @@ export interface Reparaturauftraege {
   createdat: string;
   updatedat: string | null;
   fields: {
-    kostenvoranschlag?: number;
     kunde?: string; // applookup -> URL zu 'Kunden' Record
     fahrrad_beschreibung?: string;
     problembeschreibung?: string;
@@ -143,7 +142,6 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'stammkunde': 'bool',
   },
   'reparaturauftraege': {
-    'kostenvoranschlag': 'number',
     'kunde': 'applookup/select',
     'fahrrad_beschreibung': 'string/text',
     'problembeschreibung': 'string/textarea',
@@ -700,6 +698,17 @@ import ErsatzteileDetailPage from '@/pages/ErsatzteileDetailPage';
 // <custom:imports>
 const IntentAuftragAnlegenPage = lazy(() => import('@/pages/intents/AuftragAnlegenPage'));
 const IntentAuftragAbschliessenPage = lazy(() => import('@/pages/intents/AuftragAbschliessenPage'));
+
+const PublicPage = lazy(() => import('@/pages/public/PublicPage'));
+
+function LocaleGate({ children }: { children: React.ReactNode }) {
+  const [gen, setGen] = useState(0);
+  useEffect(() => onLocaleChange(() => setGen((g) => g + 1)), []);
+  useEffect(() => {
+    if (!window.location.hash.startsWith('#/public')) void syncProfileLocale();
+  }, []);
+  return <Fragment key={`${locale}:${gen}`}>{children}</Fragment>;
+}
 // </custom:imports>
 
 // Lazy: public pages live outside <Layout> and only load on /#/public/:slug —

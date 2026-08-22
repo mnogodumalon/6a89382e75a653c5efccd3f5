@@ -7,3 +7,5 @@ Füge bei den Kunden ein optionales Ja/Nein-Feld "Stammkunde" hinzu. Ändere son
 Füge bei den Ersatzteilen ein optionales Zahlenfeld "Mindestbestand" hinzu. Ändere sonst nichts an der Struktur.
 
 Füge einen neuen Bereich "Leihräder" hinzu: Rahmennummer (Pflichtfeld), Größe (Auswahl: S, M, L), Tagespreis in Euro und "Verliehen an" als Auswahl eines Kunden. Ändere sonst nichts an den bestehenden Bereichen.
+
+Lösche das Feld "Kostenvoranschlag in Euro" bei den Reparaturaufträgen. Ändere sonst nichts an der Struktur.

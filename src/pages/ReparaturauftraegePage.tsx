@@ -140,12 +140,6 @@ export default function ReparaturauftraegePage() {
         <Table className="[&_tbody_td]:px-6 [&_tbody_td]:py-2 [&_tbody_td]:text-base [&_tbody_td]:font-medium [&_tbody_tr:first-child_td]:pt-6 [&_tbody_tr:last-child_td]:pb-10">
           <TableHeader className="bg-secondary">
             <TableRow className="border-b border-input">
-              <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('kostenvoranschlag')}>
-                <span className="inline-flex items-center gap-1">
-                  {fieldLabel('reparaturauftraege', 'kostenvoranschlag')}
-                  {sortKey === 'kostenvoranschlag' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
-                </span>
-              </TableHead>
               <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('kunde')}>
                 <span className="inline-flex items-center gap-1">
                   {fieldLabel('reparaturauftraege', 'kunde')}
@@ -182,7 +176,6 @@ export default function ReparaturauftraegePage() {
           <TableBody>
             {sortRecords(filtered).map(record => (
               <TableRow key={record.record_id} className="hover:bg-muted/50 transition-colors cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest('button, [role="checkbox"]')) return; navigate(`/reparaturauftraege/${record.record_id}`); }}>
-                <TableCell>{record.fields.kostenvoranschlag ?? '—'}</TableCell>
                 <TableCell><span className="inline-flex items-center bg-secondary border border-[#bfdbfe] text-[#2563eb] rounded-[10px] px-2 py-1 text-sm font-medium">{getKundenDisplayName(record.fields.kunde)}</span></TableCell>
                 <TableCell className="font-medium">{record.fields.fahrrad_beschreibung ?? '—'}</TableCell>
                 <TableCell className="max-w-xs"><span className="truncate block">{record.fields.problembeschreibung ?? '—'}</span></TableCell>
@@ -202,7 +195,7 @@ export default function ReparaturauftraegePage() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-16 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-16 text-muted-foreground">
                   {search ? t('no_results') : t('no_data_yet', { entity: appLabel('reparaturauftraege') })}
                 </TableCell>
               </TableRow>

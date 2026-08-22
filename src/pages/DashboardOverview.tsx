@@ -368,7 +368,7 @@ export default function DashboardOverview() {
                   <>
                     <span className="font-medium text-amber-600">{tx('Verliehen')}</span>
                     {l.fields.tagespreis != null && (
-                      <span className="text-muted-foreground"> · {formatCurrency(l.fields.tagespreis)}/Tag</span>
+                      <span className="text-muted-foreground"> · {formatCurrency(l.fields.tagespreis)}{tx('/Tag')}</span>
                     )}
                   </>
                 ),

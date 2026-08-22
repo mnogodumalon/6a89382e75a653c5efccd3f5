@@ -24,7 +24,6 @@ export function ReparaturauftraegeDetails({
   return (
     <>
       <RecordSection title={t('details')} cols={2}>
-        <RecordField label={fieldLabel('reparaturauftraege', 'kostenvoranschlag')} value={record.fields.kostenvoranschlag} format="text" />
         <RecordField label={fieldLabel('reparaturauftraege', 'fahrrad_beschreibung')} value={record.fields.fahrrad_beschreibung} format="text" />
         <RecordField label={fieldLabel('reparaturauftraege', 'problembeschreibung')} value={record.fields.problembeschreibung} format="longtext" className="md:col-span-2" />
         <RecordField label={fieldLabel('reparaturauftraege', 'abgabedatum')} value={record.fields.abgabedatum} format="date" />

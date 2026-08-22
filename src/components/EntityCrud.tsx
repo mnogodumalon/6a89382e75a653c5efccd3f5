@@ -41,7 +41,7 @@
  * Details blocks yourself):
  *   leihraeder: rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden
  *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
- *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
+ *   reparaturauftraege: kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
  *   ersatzteile: bezeichnung, lagerbestand, preis, mindestbestand
  */
 import { useState, useMemo, type ReactNode } from 'react';
