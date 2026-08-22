@@ -286,7 +286,7 @@ export function KundenDialog({ open, onClose, onSubmit, defaultValues, recordId,
         <Label htmlFor="vorname">{fieldLabel('kunden', 'vorname')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="vorname"
-          placeholder="z. B. Max"
+          placeholder=""
           value={fields.vorname ?? ''}
           onChange={e => setFields(f => ({ ...f, vorname: e.target.value }))}
           required
@@ -301,7 +301,7 @@ export function KundenDialog({ open, onClose, onSubmit, defaultValues, recordId,
         <Label htmlFor="nachname">{fieldLabel('kunden', 'nachname')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="nachname"
-          placeholder="z. B. Müller"
+          placeholder=""
           value={fields.nachname ?? ''}
           onChange={e => setFields(f => ({ ...f, nachname: e.target.value }))}
           required
@@ -327,7 +327,7 @@ export function KundenDialog({ open, onClose, onSubmit, defaultValues, recordId,
         <Input
           id="email"
           type="email"
-          placeholder="z. B. max@beispiel.de"
+          placeholder=""
           value={fields.email ?? ''}
           onChange={e => setFields(f => ({ ...f, email: e.target.value }))}
         />

@@ -347,7 +347,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="kunde">{fieldLabel('reparaturauftraege', 'kunde')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Combobox
           id="kunde"
-          placeholder="Welcher Kunde bringt das Rad?"
+          placeholder=""
           items={kundenListAll.map(r => ({
             id: r.record_id,
             label: String(r.fields.vorname ?? r.record_id),
@@ -367,7 +367,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="fahrrad_beschreibung">{fieldLabel('reparaturauftraege', 'fahrrad_beschreibung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="fahrrad_beschreibung"
-          placeholder="z. B. Mountainbike Marke/Farbe"
+          placeholder=""
           value={fields.fahrrad_beschreibung ?? ''}
           onChange={e => setFields(f => ({ ...f, fahrrad_beschreibung: e.target.value }))}
           required
@@ -382,7 +382,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="problembeschreibung">{fieldLabel('reparaturauftraege', 'problembeschreibung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Textarea
           id="problembeschreibung"
-          placeholder="Was ist kaputt? Geräusche, Verschleiß, Schaden..."
+          placeholder=""
           value={fields.problembeschreibung ?? ''}
           onChange={e => setFields(f => ({ ...f, problembeschreibung: e.target.value }))}
           rows={3}
@@ -397,7 +397,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="abgabedatum">{fieldLabel('reparaturauftraege', 'abgabedatum')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <DatePicker
           id="abgabedatum"
-          placeholder="Wann kann es abgeholt werden?"
+          placeholder=""
           mode="date"
           value={fields.abgabedatum ?? null}
           onChange={v => setFields(f => ({ ...f, abgabedatum: v ?? undefined }))}

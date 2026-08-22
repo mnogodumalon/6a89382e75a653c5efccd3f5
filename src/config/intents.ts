@@ -43,8 +43,8 @@ export interface IntentLink {
 
 export const INTENTS: IntentLink[] = [
   // <custom:intents>
-  { path: '/intents/auftrag-anlegen', label: { de: 'Auftrag anlegen', en: 'New repair order' }, icon: IconTool, description: 'Neuen Reparaturauftrag in 2 Schritten anlegen' },
-  { path: '/intents/auftrag-abschliessen', label: { de: 'Auftrag abschliessen', en: 'Complete order' }, icon: IconCircleCheck, description: 'Fertigen Auftrag als abgeholt markieren' },
+  { path: '/intents/auftrag-anlegen', label: { de: 'Auftrag anlegen', en: 'New repair order' }, icon: IconTool, description: { de: 'Neuen Reparaturauftrag in 2 Schritten anlegen', en: 'Create new repair order in 2 steps' } },
+  { path: '/intents/auftrag-abschliessen', label: { de: 'Auftrag abschliessen', en: 'Complete order' }, icon: IconCircleCheck, description: { de: 'Fertigen Auftrag als abgeholt markieren', en: 'Mark completed order as picked up' } },
   // </custom:intents>
 ];
 

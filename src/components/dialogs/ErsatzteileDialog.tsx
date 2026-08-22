@@ -286,7 +286,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="bezeichnung">{fieldLabel('ersatzteile', 'bezeichnung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="bezeichnung"
-          placeholder="z. B. Bremsbelag Set"
+          placeholder=""
           value={fields.bezeichnung ?? ''}
           onChange={e => setFields(f => ({ ...f, bezeichnung: e.target.value }))}
           required
@@ -304,7 +304,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
           type="number"
           step="any"
           {...numberInputProps(formEnhancements, 'lagerbestand')}
-          placeholder="z. B. 12"
+          placeholder=""
           value={fields.lagerbestand !== undefined ? fields.lagerbestand : (computedValues['lagerbestand'] ?? '')}
           onChange={e => setFields(f => ({ ...f, lagerbestand: clampNumberValue(formEnhancements, 'lagerbestand', e.target.value) }))}
         />
@@ -321,7 +321,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
           type="number"
           step="any"
           {...numberInputProps(formEnhancements, 'preis')}
-          placeholder="z. B. 24,99"
+          placeholder=""
           value={fields.preis !== undefined ? fields.preis : (computedValues['preis'] ?? '')}
           onChange={e => setFields(f => ({ ...f, preis: clampNumberValue(formEnhancements, 'preis', e.target.value) }))}
         />
