@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { APP_IDS } from '@/types/app';
 import { AttachmentsSection } from '@/components/AttachmentsSection';
+import { MediaThumbnail } from '@/components/widgets/MediaViewer';
 import { Badge } from '@/components/ui/badge';
-import { IconPencil } from '@tabler/icons-react';
+import { IconPencil, IconFileText } from '@tabler/icons-react';
 import { t, appLabel, fieldLabel, lookupLabel } from '@/i18n';
 
 interface LeihraederViewDialogProps {
@@ -43,6 +44,12 @@ export function LeihraederViewDialog({ open, onClose, record, onEdit, kundenList
         </div>
 
         <div className="space-y-4">
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{fieldLabel('leihraeder', 'bild_fahrrad')}</Label>
+            {record.fields.bild_fahrrad ? (
+              <MediaThumbnail src={record.fields.bild_fahrrad} fit="contain" className="w-full rounded-lg border" />
+            ) : <p className="text-sm text-muted-foreground">—</p>}
+          </div>
           <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">{fieldLabel('leihraeder', 'rahmennummer')}</Label>
             <p className="text-sm">{record.fields.rahmennummer ?? '—'}</p>

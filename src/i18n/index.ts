@@ -875,6 +875,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "name": "Leihräder",
         "app_id": "6a893fdc641de8c47248bb48",
         "fields": {
+          "bild_fahrrad": "Bild des Fahrrads",
           "rahmennummer": "Rahmennummer",
           "groesse": "Größe",
           "tagespreis": "Tagespreis (€)",
@@ -939,10 +940,11 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "name": "Rental Bikes",
         "app_id": "6a893fdc641de8c47248bb48",
         "fields": {
+          "bild_fahrrad": "Image of the Bike",
           "rahmennummer": "Frame Number",
           "groesse": "Size",
-          "tagespreis": "Daily Rate (€)",
-          "verliehen_an": "Rented To"
+          "tagespreis": "Day Rate (€)",
+          "verliehen_an": "Rented to"
         },
         "lookups": {
           "groesse": {
@@ -969,7 +971,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "app_id": "6a893819520245c43dad9f5e",
         "fields": {
           "kunde": "Customer",
-          "fahrrad_beschreibung": "Bicycle",
+          "fahrrad_beschreibung": "Bike",
           "problembeschreibung": "Problem Description",
           "abgabedatum": "Drop-off Date",
           "status": "Status"

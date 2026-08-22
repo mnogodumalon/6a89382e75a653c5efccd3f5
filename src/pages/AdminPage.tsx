@@ -26,7 +26,7 @@ import {
   SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { IconPencil, IconTrash, IconPlus, IconFilter, IconX, IconArrowsUpDown, IconArrowUp, IconArrowDown, IconSearch, IconCopy } from '@tabler/icons-react';
+import { IconPencil, IconTrash, IconPlus, IconFilter, IconX, IconArrowsUpDown, IconArrowUp, IconArrowDown, IconSearch, IconCopy, IconFileText } from '@tabler/icons-react';
 import { t, appLabel, fieldLabels, lookupLabel, dateFnsLocale, dateFormat } from '@/i18n';
 import { format, parseISO } from 'date-fns';
 
@@ -39,6 +39,7 @@ function fmtDate(d?: string) {
 // BUILD-language fallback only — getFieldMeta() re-labels every entry (and every
 // lookup option) through the runtime catalog before anything renders it.
 const LEIHRAEDER_FIELDS = [
+  { key: 'bild_fahrrad', label: 'Bild des Fahrrads', type: 'file' },
   { key: 'rahmennummer', label: 'Rahmennummer', type: 'string/text' },
   { key: 'groesse', label: 'Größe', type: 'lookup/select', options: [{ key: 's', label: 'S' }, { key: 'm', label: 'M' }, { key: 'l', label: 'L' }] },
   { key: 'tagespreis', label: 'Tagespreis (€)', type: 'number' },

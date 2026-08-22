@@ -5,6 +5,7 @@ import {
   RecordSection, RecordField, RecordRelation, RecordAttachments,
 } from '@/components/widgets/RecordView';
 import { t, appLabel, fieldLabel } from '@/i18n';
+import { MediaThumbnail } from '@/components/widgets/MediaViewer';
 
 export interface LeihraederDetailsProps {
   /** Der Record — enriched oder roh; alle Felder werden hier gerendert. */
@@ -24,6 +25,11 @@ export function LeihraederDetails({
   return (
     <>
       <RecordSection title={t('details')} cols={2}>
+        <RecordField label={fieldLabel('leihraeder', 'bild_fahrrad')} className="md:col-span-2">
+          {record.fields.bild_fahrrad ? (
+            <MediaThumbnail src={record.fields.bild_fahrrad as string} fit="contain" className="max-h-64 w-full rounded-lg" />
+          ) : '—'}
+        </RecordField>
         <RecordField label={fieldLabel('leihraeder', 'rahmennummer')} value={record.fields.rahmennummer} format="text" />
         <RecordField label={fieldLabel('leihraeder', 'groesse')} value={record.fields.groesse} format="pill" />
         <RecordField label={fieldLabel('leihraeder', 'tagespreis')} value={record.fields.tagespreis} format="text" />

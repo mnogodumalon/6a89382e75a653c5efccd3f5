@@ -7,6 +7,21 @@
       "name": "Leihräder",
       "main": false,
       "controls": {
+        "bild_fahrrad": {
+          "identifier": "bild_fahrrad",
+          "label": "Bild des Fahrrads",
+          "type": "file",
+          "subtype": null,
+          "fulltype": "file",
+          "description": "An uploaded file (or `null`/`None`).\n\nThe field value will be the URL to download the file in the form `https://my.living-apps.de/files/6a893fdc641de8c47248bb48/data/<record-id>/<control-identifier>/<internal-id>` (or `null`/`None`).",
+          "required": false,
+          "in_list": false,
+          "in_mobile_list": false,
+          "in_text": false,
+          "in_structured_search": null,
+          "in_fulltext_search": null,
+          "in_expert_search": true
+        },
         "rahmennummer": {
           "identifier": "rahmennummer",
           "label": "Rahmennummer",

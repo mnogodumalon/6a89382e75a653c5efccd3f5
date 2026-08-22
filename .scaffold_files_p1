@@ -39,6 +39,7 @@ export interface Leihraeder {
   createdat: string;
   updatedat: string | null;
   fields: {
+    bild_fahrrad?: string;
     rahmennummer?: string;
     groesse?: LookupValue;
     tagespreis?: number;
@@ -129,6 +130,7 @@ export function lookupOption(app: string, field: string, key: string): LookupVal
 
 export const FIELD_TYPES: Record<string, Record<string, string>> = {
   'leihraeder': {
+    'bild_fahrrad': 'file',
     'rahmennummer': 'string/text',
     'groesse': 'lookup/select',
     'tagespreis': 'number',

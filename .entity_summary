@@ -24,7 +24,7 @@ There is NO `@/config/appIds`, no `@/config/lookupOptions` and no
 `@/lib/urlUtils` — APP_IDS and LOOKUP_OPTIONS come from `@/types/app`,
 createRecordUrl from the service. Note the lowercase `l` in the service path.
 
-- Leihräder (leihraeder): rahmennummer![string/text], groesse[lookup/select: s|m|l], tagespreis[number], verliehen_an[applookup/select]
+- Leihräder (leihraeder): bild_fahrrad[file], rahmennummer![string/text], groesse[lookup/select: s|m|l], tagespreis[number], verliehen_an[applookup/select]
   ⚙ getLeihraeder() · getLeihraederEntry(id) · createLeihraederEntry(fields) · updateLeihraederEntry(id, fields) · deleteLeihraederEntry(id)
   ✚ EnrichedLeihraeder adds ONLY verliehen_anName — via enrichLeihraeder(leihraeder, { kundenMap }), all maps required
   → verliehen_an links to app_id 6a89381649b1e4adfb583623

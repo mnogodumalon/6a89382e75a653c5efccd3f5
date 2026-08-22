@@ -16,7 +16,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import type { Leihraeder, Kunden, LookupValue } from '@/types/app';
 import { APP_IDS, LOOKUP_OPTIONS } from '@/types/app';
-import { extractRecordId, createRecordUrl, cleanFieldsForApi, getUserProfile, LivingAppsService } from '@/services/livingAppsService';
+import { extractRecordId, createRecordUrl, cleanFieldsForApi, uploadFile, getUserProfile, LivingAppsService } from '@/services/livingAppsService';
 import {
   Dialog, DialogContent, DialogHeader,
   DialogTitle, DialogFooter,
@@ -34,7 +34,7 @@ import { Combobox } from '@/components/Combobox';
 import { KundenDialog } from '@/components/dialogs/KundenDialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { IconAlertCircle, IconCamera, IconChevronDown, IconCircleCheck, IconClipboard, IconFileText, IconLoader2, IconPhotoPlus, IconSparkles, IconUpload, IconX } from '@tabler/icons-react';
-import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode } from '@/lib/ai';
+import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode, dataUriToBlob } from '@/lib/ai';
 import { lookupKey } from '@/lib/formatters';
 
 /** Widened prefill type for LeihraederDialog.defaultValues — see file header. */
@@ -297,6 +297,16 @@ export function LeihraederDialog({ open, onClose, onSubmit, defaultValues, recor
         }
         return merged as Partial<Leihraeder['fields']>;
       });
+      // Upload scanned file to file fields
+      if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+        try {
+          const blob = dataUriToBlob(uri!);
+          const fileUrl = await uploadFile(blob, file.name);
+          setFields(prev => ({ ...prev, bild_fahrrad: fileUrl }));
+        } catch (uploadErr) {
+          console.error('File upload failed:', uploadErr);
+        }
+      }
       setAiText('');
       setScanSuccess(true);
       setTimeout(() => setScanSuccess(false), 3000);
@@ -341,6 +351,76 @@ export function LeihraederDialog({ open, onClose, onSubmit, defaultValues, recor
     : t('new_entity', { entity: appLabel('leihraeder') });
 
   const fieldBlocks: Record<string, React.ReactNode> = {
+    'bild_fahrrad': (
+      <div key="bild_fahrrad" className="space-y-1.5">
+        <Label htmlFor="bild_fahrrad">{fieldLabel('leihraeder', 'bild_fahrrad')}</Label>
+        {fields.bild_fahrrad ? (
+          <div className="flex items-center gap-3 rounded-lg border p-2">
+            <div className="relative h-14 w-14 shrink-0 rounded-md bg-muted overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <IconFileText size={20} className="text-muted-foreground" />
+              </div>
+              <img
+                src={fields.bild_fahrrad}
+                alt=""
+                className="relative h-full w-full object-cover"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm truncate text-foreground">{fields.bild_fahrrad.split("/").pop()}</p>
+              <div className="flex gap-2 mt-1">
+                <label
+                  className="text-xs text-primary hover:underline cursor-pointer"
+                >
+                  {t('fr_change')}
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const fileUrl = await uploadFile(file, file.name);
+                        setFields(f => ({ ...f, bild_fahrrad: fileUrl }));
+                      } catch (err) { console.error('Upload failed:', err); }
+                    }}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                  onClick={() => setFields(f => ({ ...f, bild_fahrrad: undefined }))}
+                >
+                  {t('fr_remove')}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <label
+            className="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-muted-foreground/25 p-4 cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors"
+          >
+            <IconUpload size={20} className="text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">{t('fr_upload_file')}</span>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                try {
+                  const fileUrl = await uploadFile(file, file.name);
+                  setFields(f => ({ ...f, bild_fahrrad: fileUrl }));
+                } catch (err) { console.error('Upload failed:', err); }
+              }}
+            />
+          </label>
+        )}
+      </div>
+    ),
     'rahmennummer': (
       <div key="rahmennummer" className="space-y-1.5">
         <Label htmlFor="rahmennummer">{fieldLabel('leihraeder', 'rahmennummer')} <span className="text-destructive" aria-hidden="true">*</span></Label>
@@ -447,7 +527,7 @@ export function LeihraederDialog({ open, onClose, onSubmit, defaultValues, recor
   //     kein passendes Backend-Feld in orderedFields) erscheinen NICHT als
   //     Input, sondern unten als kompakte 'Berechnungen'-Übersicht oder als
   //     Inline-Hint unter dem letzten beitragenden Input.
-  const FIELD_LABELS: Record<string, string> = {"rahmennummer": "Rahmennummer", "groesse": "Größe", "tagespreis": "Tagespreis (€)", "verliehen_an": "Verliehen an"};
+  const FIELD_LABELS: Record<string, string> = {"bild_fahrrad": "Bild des Fahrrads", "rahmennummer": "Rahmennummer", "groesse": "Größe", "tagespreis": "Tagespreis (€)", "verliehen_an": "Verliehen an"};
   const CURRENCY_KEYS = new Set<string>(["tagespreis"]);
   // Applookup-Referenz-Labels: pro applookup-Feld in dieser Form (ownKey)
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird
