@@ -248,6 +248,10 @@ export const UI_CATALOG: Record<CoreLocale, Record<string, string>> = {
     "update_verify_timeout": "Version konnte nicht bestätigt werden. Bitte Seite neu laden.",
     "update_busy_queued": "Ein Build läuft gerade (gestartet vor {min} min). Das Update ist vorgemerkt und wird danach automatisch ausgeführt.",
     "busy_build_running": "Für dieses Dashboard läuft gerade ein Build. Bitte versuche es in ein paar Minuten erneut.",
+    "vc_build_pill": "Dashboard wird aktualisiert",
+    "vc_updated_toast": "Dashboard wurde aktualisiert",
+    "vc_updated_toast_desc": "Die Struktur hat sich geändert — offene Formulare bitte neu öffnen.",
+    "vc_updated_reload": "Neu laden",
     "rollback_label": "Zurück auf",
     "rollback_confirm_title": "Version zurücksetzen?",
     "rollback_confirm_desc": "Die Anwendung wird auf die ausgewählte Version zurückgesetzt.",
@@ -640,6 +644,10 @@ export const UI_CATALOG: Record<CoreLocale, Record<string, string>> = {
     "update_verify_timeout": "Could not confirm new version. Please reload the page.",
     "update_busy_queued": "A build is already running (started {min} min ago). The update is queued and will run automatically afterwards.",
     "busy_build_running": "A build is currently running for this dashboard. Please try again in a few minutes.",
+    "vc_build_pill": "Dashboard is being updated",
+    "vc_updated_toast": "Dashboard has been updated",
+    "vc_updated_toast_desc": "The structure has changed — please reopen any open forms.",
+    "vc_updated_reload": "Reload",
     "rollback_label": "Revert to",
     "rollback_confirm_title": "Revert version?",
     "rollback_confirm_desc": "The app will be reverted to the selected version.",
@@ -970,7 +978,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "status": {
             "angenommen": "Accepted",
             "in_arbeit": "In Progress",
-            "fertig": "Completed",
+            "fertig": "Done",
             "abgeholt": "Picked Up"
           }
         }
@@ -979,7 +987,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "name": "Parts Inventory",
         "app_id": "6a8938194cf2973db816a8b8",
         "fields": {
-          "bezeichnung": "Description",
+          "bezeichnung": "Name",
           "lagerbestand": "Stock",
           "preis": "Price (€)",
           "mindestbestand": "Minimum Stock"

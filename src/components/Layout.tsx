@@ -10,6 +10,7 @@ import { PublicPagesNav } from '@/components/PublicPagesNav';
 import { useActions } from '@/context/ActionsContext';
 import { Button } from '@/components/ui/button';
 import { VersionCheck } from '@/components/VersionCheck';
+import { BuildStatusWatcher } from '@/components/BuildStatusWatcher';
 // Sprachwechsel kommt aus der Plattform-Topnav: sie schreibt <html lang>,
 // src/i18n beobachtet das Attribut und LocaleGate remountet den Baum.
 import { t, appgroupLabel } from '@/i18n';
@@ -182,6 +183,7 @@ export function Layout() {
 
       <ChatWidget />
       <ActionCodeDrawer />
+      <BuildStatusWatcher />
 
       {inputFormAction && inputFormAction.metadata?.input_schema && (
         <ActionInputDialog

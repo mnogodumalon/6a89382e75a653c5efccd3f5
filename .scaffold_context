@@ -52,7 +52,6 @@ Generated 116 scaffold files:
   - src/components/DatePicker.tsx
   - .placeholder-tasks.json
   - src/config/form-enhancements/types.ts
-  - src/config/form-enhancements/Teilelager.ts
   - scripts/parse-formulas.mjs
   - scripts/apply-placeholders.mjs
   - src/config/intents.ts
@@ -77,6 +76,7 @@ Generated 116 scaffold files:
   - src/components/ChatWidget.tsx
   - src/components/ActionCodeDrawer.tsx
   - src/components/VersionCheck.tsx
+  - src/components/BuildStatusWatcher.tsx
   - src/components/AttachmentsSection.tsx
   - src/lib/formatters.ts
   - src/lib/polish.ts

@@ -1,26 +1,6 @@
 {
   "version": 1,
-  "changes": [
-    {
-      "kind": "label_changed",
-      "scope": "entity",
-      "entity": "teilelager",
-      "old_name": "Ersatzteile",
-      "new_name": "Teilelager",
-      "old_identifier": "ersatzteile",
-      "new_identifier": "teilelager"
-    },
-    {
-      "kind": "label_changed",
-      "scope": "field",
-      "entity": "reparaturauftraege",
-      "field": "fahrrad_beschreibung",
-      "old_label": "Fahrrad-Beschreibung",
-      "new_label": "Fahrrad"
-    }
-  ],
-  "counts": {
-    "label_changed": 2
-  },
+  "changes": [],
+  "counts": {},
   "harmless_only": true
 }
