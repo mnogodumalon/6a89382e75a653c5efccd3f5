@@ -61,6 +61,11 @@
       "entity_context": "Fahrradwerkstatt Verwaltung",
       "fields": [
         {
+          "key": "kostenvoranschlag",
+          "label": "Kostenvoranschlag (€)",
+          "type": "number"
+        },
+        {
           "key": "kunde",
           "label": "Kunde",
           "type": "applookup/select",
@@ -85,6 +90,12 @@
       "formEnhancements": {
         "configPath": "src/config/form-enhancements/Reparaturauftraege.ts",
         "fields": [
+          {
+            "key": "kostenvoranschlag",
+            "label": "Kostenvoranschlag (€)",
+            "type": "number",
+            "required": false
+          },
           {
             "key": "kunde",
             "label": "Kunde",

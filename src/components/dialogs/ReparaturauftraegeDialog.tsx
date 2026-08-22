@@ -273,7 +273,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
         }
       }
       const photoContext = contextParts.length ? contextParts.join('\n') : undefined;
-      const schema = `{\n  "kunde": string | null, // Display name from Kunden (see <available-records>)\n  "fahrrad_beschreibung": string | null, // Fahrrad-Beschreibung\n  "problembeschreibung": string | null, // Problembeschreibung\n  "abgabedatum": string | null, // YYYY-MM-DD\n  "status": LookupValue | null, // Status (select one key: "angenommen" | "in_arbeit" | "fertig" | "abgeholt") mapping: angenommen=Angenommen, in_arbeit=In Arbeit, fertig=Fertig, abgeholt=Abgeholt\n}`;
+      const schema = `{\n  "kostenvoranschlag": number | null, // Kostenvoranschlag (€)\n  "kunde": string | null, // Display name from Kunden (see <available-records>)\n  "fahrrad_beschreibung": string | null, // Fahrrad-Beschreibung\n  "problembeschreibung": string | null, // Problembeschreibung\n  "abgabedatum": string | null, // YYYY-MM-DD\n  "status": LookupValue | null, // Status (select one key: "angenommen" | "in_arbeit" | "fertig" | "abgeholt") mapping: angenommen=Angenommen, in_arbeit=In Arbeit, fertig=Fertig, abgeholt=Abgeholt\n}`;
       const raw = await extractFromInput<Record<string, unknown>>(schema, {
         dataUri: uri,
         userText: aiText.trim() || undefined,
@@ -342,6 +342,20 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
     : t('new_entity', { entity: appLabel('reparaturauftraege') });
 
   const fieldBlocks: Record<string, React.ReactNode> = {
+    'kostenvoranschlag': (
+      <div key="kostenvoranschlag" className="space-y-1.5">
+        <Label htmlFor="kostenvoranschlag">{fieldLabel('reparaturauftraege', 'kostenvoranschlag')}</Label>
+        <Input
+          id="kostenvoranschlag"
+          type="number"
+          step="any"
+          {...numberInputProps(formEnhancements, 'kostenvoranschlag')}
+          placeholder=""
+          value={fields.kostenvoranschlag !== undefined ? fields.kostenvoranschlag : (computedValues['kostenvoranschlag'] ?? '')}
+          onChange={e => setFields(f => ({ ...f, kostenvoranschlag: clampNumberValue(formEnhancements, 'kostenvoranschlag', e.target.value) }))}
+        />
+      </div>
+    ),
     'kunde': (
       <div key="kunde" className="space-y-1.5">
         <Label htmlFor="kunde">{fieldLabel('reparaturauftraege', 'kunde')} <span className="text-destructive" aria-hidden="true">*</span></Label>
@@ -484,8 +498,8 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
   //     kein passendes Backend-Feld in orderedFields) erscheinen NICHT als
   //     Input, sondern unten als kompakte 'Berechnungen'-Übersicht oder als
   //     Inline-Hint unter dem letzten beitragenden Input.
-  const FIELD_LABELS: Record<string, string> = {"kunde": "Kunde", "fahrrad_beschreibung": "Fahrrad-Beschreibung", "problembeschreibung": "Problembeschreibung", "abgabedatum": "Abgabedatum", "status": "Status"};
-  const CURRENCY_KEYS = new Set<string>([]);
+  const FIELD_LABELS: Record<string, string> = {"kostenvoranschlag": "Kostenvoranschlag (€)", "kunde": "Kunde", "fahrrad_beschreibung": "Fahrrad-Beschreibung", "problembeschreibung": "Problembeschreibung", "abgabedatum": "Abgabedatum", "status": "Status"};
+  const CURRENCY_KEYS = new Set<string>(["kostenvoranschlag"]);
   // Applookup-Referenz-Labels: pro applookup-Feld in dieser Form (ownKey)
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird
   // beim Render-Walk gefiltert auf die in der computed-Formel tatsächlich

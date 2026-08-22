@@ -26,7 +26,7 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
 
 - Kunden (kunden): vorname![string/text], nachname![string/text], telefonnummer[string/tel], email[string/email]
   ⚙ getKunden() · getKundenEntry(id) · createKundenEntry(fields) · updateKundenEntry(id, fields) · deleteKundenEntry(id)
-- Reparaturaufträge (reparaturauftraege): kunde![applookup/select], fahrrad_beschreibung![string/text], problembeschreibung![string/textarea], abgabedatum![date/date], status![lookup/radio: angenommen|in_arbeit|fertig|abgeholt]
+- Reparaturaufträge (reparaturauftraege): kostenvoranschlag[number], kunde![applookup/select], fahrrad_beschreibung![string/text], problembeschreibung![string/textarea], abgabedatum![date/date], status![lookup/radio: angenommen|in_arbeit|fertig|abgeholt]
   ⚙ getReparaturauftraege() · getReparaturauftraegeEntry(id) · createReparaturauftraegeEntry(fields) · updateReparaturauftraegeEntry(id, fields) · deleteReparaturauftraegeEntry(id)
   ✚ EnrichedReparaturauftraege adds ONLY kundeName — via enrichReparaturauftraege(reparaturauftraege, { kundenMap }), all maps required
   → kunde links to app_id 6a89381649b1e4adfb583623

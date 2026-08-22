@@ -1,6 +1,16 @@
 {
   "version": 1,
-  "changes": [],
-  "counts": {},
-  "harmless_only": true
+  "changes": [
+    {
+      "kind": "field_added",
+      "entity": "reparaturauftraege",
+      "field": "kostenvoranschlag",
+      "fulltype": "number",
+      "label": "Kostenvoranschlag (€)"
+    }
+  ],
+  "counts": {
+    "field_added": 1
+  },
+  "harmless_only": false
 }

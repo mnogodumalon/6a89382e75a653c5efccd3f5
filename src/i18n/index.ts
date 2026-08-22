@@ -878,6 +878,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "name": "Reparaturaufträge",
         "app_id": "6a893819520245c43dad9f5e",
         "fields": {
+          "kostenvoranschlag": "Kostenvoranschlag (€)",
           "kunde": "Kunde",
           "fahrrad_beschreibung": "Fahrrad-Beschreibung",
           "problembeschreibung": "Problembeschreibung",
@@ -923,6 +924,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "name": "Repair Orders",
         "app_id": "6a893819520245c43dad9f5e",
         "fields": {
+          "kostenvoranschlag": "Cost Estimate (€)",
           "kunde": "Customer",
           "fahrrad_beschreibung": "Bicycle Description",
           "problembeschreibung": "Problem Description",

@@ -50,6 +50,10 @@ export function ReparaturauftraegeViewDialog({ open, onClose, record, onEdit, ku
 
         <div className="space-y-4">
           <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{fieldLabel('reparaturauftraege', 'kostenvoranschlag')}</Label>
+            <p className="text-sm">{record.fields.kostenvoranschlag ?? '—'}</p>
+          </div>
+          <div className="space-y-1">
             <Label className="text-xs text-muted-foreground">{fieldLabel('reparaturauftraege', 'kunde')}</Label>
             <p className="text-sm">{getKundenDisplayName(record.fields.kunde)}</p>
           </div>

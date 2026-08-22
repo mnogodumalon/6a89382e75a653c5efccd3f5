@@ -40,7 +40,7 @@
  * Overlay content per entity (the host renders these — you never compose
  * Details blocks yourself):
  *   kunden: vorname, nachname, telefonnummer, email  ·  ← reparaturauftraege (list + contextual +)
- *   reparaturauftraege: kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
+ *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
  *   ersatzteile: bezeichnung, lagerbestand, preis
  */
 import { useState, useMemo, type ReactNode } from 'react';
