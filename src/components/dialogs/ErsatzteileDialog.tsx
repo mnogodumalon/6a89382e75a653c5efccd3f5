@@ -219,7 +219,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
         }
       }
       const photoContext = contextParts.length ? contextParts.join('\n') : undefined;
-      const schema = `{\n  "bezeichnung": string | null, // Bezeichnung\n  "lagerbestand": number | null, // Lagerbestand\n  "preis": number | null, // Preis (€)\n}`;
+      const schema = `{\n  "bezeichnung": string | null, // Bezeichnung\n  "lagerbestand": number | null, // Lagerbestand\n  "preis": number | null, // Preis (€)\n  "mindestbestand": number | null, // Mindestbestand\n}`;
       const raw = await extractFromInput<Record<string, unknown>>(schema, {
         dataUri: uri,
         userText: aiText.trim() || undefined,
@@ -330,6 +330,20 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
         )}
       </div>
     ),
+    'mindestbestand': (
+      <div key="mindestbestand" className="space-y-1.5">
+        <Label htmlFor="mindestbestand">{fieldLabel('ersatzteile', 'mindestbestand')}</Label>
+        <Input
+          id="mindestbestand"
+          type="number"
+          step="any"
+          {...numberInputProps(formEnhancements, 'mindestbestand')}
+          placeholder=""
+          value={fields.mindestbestand !== undefined ? fields.mindestbestand : (computedValues['mindestbestand'] ?? '')}
+          onChange={e => setFields(f => ({ ...f, mindestbestand: clampNumberValue(formEnhancements, 'mindestbestand', e.target.value) }))}
+        />
+      </div>
+    ),
   };
   const orderedFields = applyFieldOrder(Object.keys(fieldBlocks), formEnhancements.fieldOrder);
   const orderedFieldsKey = orderedFields.map((it) => typeof it === 'string' ? it : it.row.join('+')).join(',');
@@ -344,7 +358,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
   //     kein passendes Backend-Feld in orderedFields) erscheinen NICHT als
   //     Input, sondern unten als kompakte 'Berechnungen'-Übersicht oder als
   //     Inline-Hint unter dem letzten beitragenden Input.
-  const FIELD_LABELS: Record<string, string> = {"bezeichnung": "Bezeichnung", "lagerbestand": "Lagerbestand", "preis": "Preis (€)"};
+  const FIELD_LABELS: Record<string, string> = {"bezeichnung": "Bezeichnung", "lagerbestand": "Lagerbestand", "preis": "Preis (€)", "mindestbestand": "Mindestbestand"};
   const CURRENCY_KEYS = new Set<string>(["preis"]);
   // Applookup-Referenz-Labels: pro applookup-Feld in dieser Form (ownKey)
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird

@@ -139,6 +139,12 @@ export default function ErsatzteilePage() {
                   {sortKey === 'preis' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
                 </span>
               </TableHead>
+              <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('mindestbestand')}>
+                <span className="inline-flex items-center gap-1">
+                  {fieldLabel('ersatzteile', 'mindestbestand')}
+                  {sortKey === 'mindestbestand' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
+                </span>
+              </TableHead>
               <TableHead className="w-24 uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6">{t('actions')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -148,6 +154,7 @@ export default function ErsatzteilePage() {
                 <TableCell className="font-medium">{record.fields.bezeichnung ?? '—'}</TableCell>
                 <TableCell>{record.fields.lagerbestand ?? '—'}</TableCell>
                 <TableCell>{record.fields.preis ?? '—'}</TableCell>
+                <TableCell>{record.fields.mindestbestand ?? '—'}</TableCell>
                 <TableCell>
                   <div className="flex gap-1">
                     <Button variant="ghost" size="icon" onClick={() => setEditingRecord(record)}>
@@ -162,7 +169,7 @@ export default function ErsatzteilePage() {
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-16 text-muted-foreground">
+                <TableCell colSpan={5} className="text-center py-16 text-muted-foreground">
                   {search ? t('no_results') : t('no_data_yet', { entity: appLabel('ersatzteile') })}
                 </TableCell>
               </TableRow>

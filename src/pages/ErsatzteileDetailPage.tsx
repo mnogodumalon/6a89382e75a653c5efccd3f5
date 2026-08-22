@@ -99,6 +99,7 @@ export default function ErsatzteileDetailPage() {
         <RecordField label={fieldLabel('ersatzteile', 'bezeichnung')} value={record.fields.bezeichnung} format="text" />
         <RecordField label={fieldLabel('ersatzteile', 'lagerbestand')} value={record.fields.lagerbestand} format="text" />
         <RecordField label={fieldLabel('ersatzteile', 'preis')} value={record.fields.preis} format="text" />
+        <RecordField label={fieldLabel('ersatzteile', 'mindestbestand')} value={record.fields.mindestbestand} format="text" />
       </RecordSection>
 
       <RecordAttachments appId={APP_IDS.ERSATZTEILE} recordId={record.record_id} />

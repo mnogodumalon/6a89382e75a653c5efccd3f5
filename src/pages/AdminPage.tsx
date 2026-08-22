@@ -55,6 +55,7 @@ const ERSATZTEILE_FIELDS = [
   { key: 'bezeichnung', label: 'Bezeichnung', type: 'string/text' },
   { key: 'lagerbestand', label: 'Lagerbestand', type: 'number' },
   { key: 'preis', label: 'Preis (€)', type: 'number' },
+  { key: 'mindestbestand', label: 'Mindestbestand', type: 'number' },
 ];
 
 const ENTITY_TABS = [

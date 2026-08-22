@@ -240,6 +240,22 @@
           "in_fulltext_search": true,
           "in_expert_search": true,
           "precision": null
+        },
+        "mindestbestand": {
+          "identifier": "mindestbestand",
+          "label": "Mindestbestand",
+          "type": "number",
+          "subtype": null,
+          "fulltype": "number",
+          "description": "A decimal number value (or `null`/`None`).",
+          "required": false,
+          "in_list": false,
+          "in_mobile_list": false,
+          "in_text": false,
+          "in_structured_search": null,
+          "in_fulltext_search": null,
+          "in_expert_search": true,
+          "precision": null
         }
       }
     }

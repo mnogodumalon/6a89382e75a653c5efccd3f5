@@ -41,7 +41,7 @@
  * Details blocks yourself):
  *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
- *   ersatzteile: bezeichnung, lagerbestand, preis
+ *   ersatzteile: bezeichnung, lagerbestand, preis, mindestbestand
  */
 import { useState, useMemo, type ReactNode } from 'react';
 import type { Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';

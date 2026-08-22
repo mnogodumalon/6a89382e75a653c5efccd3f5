@@ -76,6 +76,7 @@ export interface Ersatzteile {
     bezeichnung?: string;
     lagerbestand?: number;
     preis?: number;
+    mindestbestand?: number;
   };
 }
 
@@ -120,6 +121,7 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'bezeichnung': 'string/text',
     'lagerbestand': 'number',
     'preis': 'number',
+    'mindestbestand': 'number',
   },
 };
 

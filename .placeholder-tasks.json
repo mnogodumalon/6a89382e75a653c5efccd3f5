@@ -173,6 +173,11 @@
           "key": "preis",
           "label": "Preis (€)",
           "type": "number"
+        },
+        {
+          "key": "mindestbestand",
+          "label": "Mindestbestand",
+          "type": "number"
         }
       ],
       "formEnhancements": {
@@ -195,6 +200,12 @@
             "label": "Preis (€)",
             "type": "number",
             "required": true
+          },
+          {
+            "key": "mindestbestand",
+            "label": "Mindestbestand",
+            "type": "number",
+            "required": false
           }
         ]
       }

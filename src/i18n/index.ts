@@ -901,14 +901,15 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "fields": {
           "bezeichnung": "Bezeichnung",
           "lagerbestand": "Lagerbestand",
-          "preis": "Preis (€)"
+          "preis": "Preis (€)",
+          "mindestbestand": "Mindestbestand"
         },
         "lookups": {}
       }
     }
   },
   "en": {
-    "appgroup": "Bike Workshop Management",
+    "appgroup": "Bike Shop Management",
     "apps": {
       "kunden": {
         "name": "Customers",
@@ -948,7 +949,8 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "fields": {
           "bezeichnung": "Name",
           "lagerbestand": "Stock",
-          "preis": "Price (€)"
+          "preis": "Price (€)",
+          "mindestbestand": "Minimum Stock"
         },
         "lookups": {}
       }

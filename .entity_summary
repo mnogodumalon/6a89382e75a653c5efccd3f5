@@ -30,5 +30,5 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   ⚙ getReparaturauftraege() · getReparaturauftraegeEntry(id) · createReparaturauftraegeEntry(fields) · updateReparaturauftraegeEntry(id, fields) · deleteReparaturauftraegeEntry(id)
   ✚ EnrichedReparaturauftraege adds ONLY kundeName — via enrichReparaturauftraege(reparaturauftraege, { kundenMap }), all maps required
   → kunde links to app_id 6a89381649b1e4adfb583623
-- Ersatzteile (ersatzteile): bezeichnung![string/text], lagerbestand![number], preis![number]
+- Ersatzteile (ersatzteile): bezeichnung![string/text], lagerbestand![number], preis![number], mindestbestand[number]
   ⚙ getErsatzteile() · getErsatzteileEntry(id) · createErsatzteileEntry(fields) · updateErsatzteileEntry(id, fields) · deleteErsatzteileEntry(id)

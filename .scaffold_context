@@ -259,7 +259,7 @@ contracts; Read one only if the contract below is insufficient.
  * Details blocks yourself):
  *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kostenvoranschlag, kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
- *   ersatzteile: bezeichnung, lagerbestand, preis
+ *   ersatzteile: bezeichnung, lagerbestand, preis, mindestbestand
  */
 ```
 

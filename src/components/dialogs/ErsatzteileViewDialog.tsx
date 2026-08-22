@@ -46,6 +46,10 @@ export function ErsatzteileViewDialog({ open, onClose, record, onEdit }: Ersatzt
             <Label className="text-xs text-muted-foreground">{fieldLabel('ersatzteile', 'preis')}</Label>
             <p className="text-sm">{record.fields.preis ?? '—'}</p>
           </div>
+          <div className="space-y-1">
+            <Label className="text-xs text-muted-foreground">{fieldLabel('ersatzteile', 'mindestbestand')}</Label>
+            <p className="text-sm">{record.fields.mindestbestand ?? '—'}</p>
+          </div>
           <div className="pt-2 border-t border-border">
             <AttachmentsSection appId={APP_IDS.ERSATZTEILE} recordId={record.record_id} readOnly />
           </div>

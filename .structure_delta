@@ -3,10 +3,10 @@
   "changes": [
     {
       "kind": "field_added",
-      "entity": "kunden",
-      "field": "stammkunde",
-      "fulltype": "bool",
-      "label": "Stammkunde"
+      "entity": "ersatzteile",
+      "field": "mindestbestand",
+      "fulltype": "number",
+      "label": "Mindestbestand"
     }
   ],
   "counts": {
