@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
 import { LivingAppsService, extractRecordId, cleanFieldsForApi } from '@/services/livingAppsService';
 import { LeihraederDialog } from '@/components/dialogs/LeihraederDialog';
 import { LeihraederViewDialog } from '@/components/dialogs/LeihraederViewDialog';
@@ -8,8 +8,8 @@ import { KundenDialog } from '@/components/dialogs/KundenDialog';
 import { KundenViewDialog } from '@/components/dialogs/KundenViewDialog';
 import { ReparaturauftraegeDialog } from '@/components/dialogs/ReparaturauftraegeDialog';
 import { ReparaturauftraegeViewDialog } from '@/components/dialogs/ReparaturauftraegeViewDialog';
-import { ErsatzteileDialog } from '@/components/dialogs/ErsatzteileDialog';
-import { ErsatzteileViewDialog } from '@/components/dialogs/ErsatzteileViewDialog';
+import { TeilelagerDialog } from '@/components/dialogs/TeilelagerDialog';
+import { TeilelagerViewDialog } from '@/components/dialogs/TeilelagerViewDialog';
 import { BulkEditDialog } from '@/components/dialogs/BulkEditDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PageShell } from '@/components/PageShell';
@@ -53,12 +53,12 @@ const KUNDEN_FIELDS = [
 ];
 const REPARATURAUFTRAEGE_FIELDS = [
   { key: 'kunde', label: 'Kunde', type: 'applookup/select', targetEntity: 'kunden', targetAppId: 'KUNDEN', displayField: 'vorname' },
-  { key: 'fahrrad_beschreibung', label: 'Fahrrad-Beschreibung', type: 'string/text' },
+  { key: 'fahrrad_beschreibung', label: 'Fahrrad', type: 'string/text' },
   { key: 'problembeschreibung', label: 'Problembeschreibung', type: 'string/textarea' },
   { key: 'abgabedatum', label: 'Abgabedatum', type: 'date/date' },
   { key: 'status', label: 'Status', type: 'lookup/radio', options: [{ key: 'angenommen', label: 'Angenommen' }, { key: 'in_arbeit', label: 'In Arbeit' }, { key: 'fertig', label: 'Fertig' }, { key: 'abgeholt', label: 'Abgeholt' }] },
 ];
-const ERSATZTEILE_FIELDS = [
+const TEILELAGER_FIELDS = [
   { key: 'bezeichnung', label: 'Bezeichnung', type: 'string/text' },
   { key: 'lagerbestand', label: 'Lagerbestand', type: 'number' },
   { key: 'preis', label: 'Preis (€)', type: 'number' },
@@ -69,7 +69,7 @@ const ENTITY_TABS = [
   { key: 'leihraeder', pascal: 'Leihraeder' },
   { key: 'kunden', pascal: 'Kunden' },
   { key: 'reparaturauftraege', pascal: 'Reparaturauftraege' },
-  { key: 'ersatzteile', pascal: 'Ersatzteile' },
+  { key: 'teilelager', pascal: 'Teilelager' },
 ] as const;
 
 type EntityKey = typeof ENTITY_TABS[number]['key'];
@@ -83,13 +83,13 @@ export default function AdminPage() {
     'leihraeder': new Set(),
     'kunden': new Set(),
     'reparaturauftraege': new Set(),
-    'ersatzteile': new Set(),
+    'teilelager': new Set(),
   }));
   const [filters, setFilters] = useState<Record<EntityKey, Record<string, string>>>(() => ({
     'leihraeder': {},
     'kunden': {},
     'reparaturauftraege': {},
-    'ersatzteile': {},
+    'teilelager': {},
   }));
   const [showFilters, setShowFilters] = useState(false);
   const [dialogState, setDialogState] = useState<{ entity: EntityKey; record: any } | null>(null);
@@ -107,7 +107,7 @@ export default function AdminPage() {
       case 'leihraeder': return (data as any).leihraeder as Leihraeder[] ?? [];
       case 'kunden': return (data as any).kunden as Kunden[] ?? [];
       case 'reparaturauftraege': return (data as any).reparaturauftraege as Reparaturauftraege[] ?? [];
-      case 'ersatzteile': return (data as any).ersatzteile as Ersatzteile[] ?? [];
+      case 'teilelager': return (data as any).teilelager as Teilelager[] ?? [];
       default: return [];
     }
   }, [data]);
@@ -151,7 +151,7 @@ export default function AdminPage() {
         case 'leihraeder': return LEIHRAEDER_FIELDS as any[];
         case 'kunden': return KUNDEN_FIELDS as any[];
         case 'reparaturauftraege': return REPARATURAUFTRAEGE_FIELDS as any[];
-        case 'ersatzteile': return ERSATZTEILE_FIELDS as any[];
+        case 'teilelager': return TEILELAGER_FIELDS as any[];
         default: return [];
       }
     })();
@@ -272,10 +272,10 @@ export default function AdminPage() {
         update: (id: string, fields: any) => LivingAppsService.updateReparaturauftraegeEntry(id, fields),
         remove: (id: string) => LivingAppsService.deleteReparaturauftraegeEntry(id),
       };
-      case 'ersatzteile': return {
-        create: (fields: any) => LivingAppsService.createErsatzteileEntry(fields),
-        update: (id: string, fields: any) => LivingAppsService.updateErsatzteileEntry(id, fields),
-        remove: (id: string) => LivingAppsService.deleteErsatzteileEntry(id),
+      case 'teilelager': return {
+        create: (fields: any) => LivingAppsService.createTeilelagerEntry(fields),
+        update: (id: string, fields: any) => LivingAppsService.updateTeilelagerEntry(id, fields),
+        remove: (id: string) => LivingAppsService.deleteTeilelagerEntry(id),
       };
       default: return null;
     }
@@ -649,14 +649,14 @@ export default function AdminPage() {
           enablePhotoLocation={AI_PHOTO_LOCATION['Reparaturauftraege']}
         />
       )}
-      {(createEntity === 'ersatzteile' || dialogState?.entity === 'ersatzteile') && (
-        <ErsatzteileDialog
-          open={createEntity === 'ersatzteile' || dialogState?.entity === 'ersatzteile'}
+      {(createEntity === 'teilelager' || dialogState?.entity === 'teilelager') && (
+        <TeilelagerDialog
+          open={createEntity === 'teilelager' || dialogState?.entity === 'teilelager'}
           onClose={() => { setCreateEntity(null); setDialogState(null); }}
-          onSubmit={dialogState?.entity === 'ersatzteile' ? handleUpdate : (fields: any) => handleCreate('ersatzteile', fields)}
-          defaultValues={dialogState?.entity === 'ersatzteile' ? dialogState.record?.fields : undefined}
-          enablePhotoScan={AI_PHOTO_SCAN['Ersatzteile']}
-          enablePhotoLocation={AI_PHOTO_LOCATION['Ersatzteile']}
+          onSubmit={dialogState?.entity === 'teilelager' ? handleUpdate : (fields: any) => handleCreate('teilelager', fields)}
+          defaultValues={dialogState?.entity === 'teilelager' ? dialogState.record?.fields : undefined}
+          enablePhotoScan={AI_PHOTO_SCAN['Teilelager']}
+          enablePhotoLocation={AI_PHOTO_LOCATION['Teilelager']}
         />
       )}
       {viewState?.entity === 'leihraeder' && (
@@ -685,12 +685,12 @@ export default function AdminPage() {
           kundenList={(data as any).kunden ?? []}
         />
       )}
-      {viewState?.entity === 'ersatzteile' && (
-        <ErsatzteileViewDialog
-          open={viewState?.entity === 'ersatzteile'}
+      {viewState?.entity === 'teilelager' && (
+        <TeilelagerViewDialog
+          open={viewState?.entity === 'teilelager'}
           onClose={() => setViewState(null)}
           record={viewState?.record}
-          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'ersatzteile', record: r }); }}
+          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'teilelager', record: r }); }}
         />
       )}
 

@@ -24,7 +24,7 @@ export function TeilelagerViewDialog({ open, onClose, record, onEdit }: Teilelag
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('view_entity', { entity: appLabel('ersatzteile') })}</DialogTitle>
+          <DialogTitle>{t('view_entity', { entity: appLabel('teilelager') })}</DialogTitle>
         </DialogHeader>
         <div className="flex justify-end">
           <Button size="sm" onClick={() => { onClose(); onEdit(record); }}>
@@ -35,19 +35,19 @@ export function TeilelagerViewDialog({ open, onClose, record, onEdit }: Teilelag
 
         <div className="space-y-4">
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{fieldLabel('ersatzteile', 'bezeichnung')}</Label>
+            <Label className="text-xs text-muted-foreground">{fieldLabel('teilelager', 'bezeichnung')}</Label>
             <p className="text-sm">{record.fields.bezeichnung ?? '—'}</p>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{fieldLabel('ersatzteile', 'lagerbestand')}</Label>
+            <Label className="text-xs text-muted-foreground">{fieldLabel('teilelager', 'lagerbestand')}</Label>
             <p className="text-sm">{record.fields.lagerbestand ?? '—'}</p>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{fieldLabel('ersatzteile', 'preis')}</Label>
+            <Label className="text-xs text-muted-foreground">{fieldLabel('teilelager', 'preis')}</Label>
             <p className="text-sm">{record.fields.preis ?? '—'}</p>
           </div>
           <div className="space-y-1">
-            <Label className="text-xs text-muted-foreground">{fieldLabel('ersatzteile', 'mindestbestand')}</Label>
+            <Label className="text-xs text-muted-foreground">{fieldLabel('teilelager', 'mindestbestand')}</Label>
             <p className="text-sm">{record.fields.mindestbestand ?? '—'}</p>
           </div>
           <div className="pt-2 border-t border-border">

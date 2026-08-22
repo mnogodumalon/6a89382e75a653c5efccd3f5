@@ -181,7 +181,7 @@
         },
         "fahrrad_beschreibung": {
           "identifier": "fahrrad_beschreibung",
-          "label": "Fahrrad-Beschreibung",
+          "label": "Fahrrad",
           "type": "string",
           "subtype": "text",
           "fulltype": "string/text",
@@ -247,9 +247,9 @@
         }
       }
     },
-    "ersatzteile": {
+    "teilelager": {
       "app_id": "6a8938194cf2973db816a8b8",
-      "name": "Ersatzteile",
+      "name": "Teilelager",
       "main": false,
       "controls": {
         "bezeichnung": {
@@ -323,7 +323,7 @@
       "Leihräder",
       "Kunden",
       "Reparaturaufträge",
-      "Ersatzteile"
+      "Teilelager"
     ]
   }
 }

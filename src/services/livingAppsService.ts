@@ -1,7 +1,7 @@
 // AUTOMATICALLY GENERATED SERVICE
 import { APP_IDS, LOOKUP_OPTIONS, FIELD_TYPES } from '@/types/app';
 import { ensureUploadableImage } from '@/lib/ai';
-import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateErsatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Teilelager, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateTeilelager } from '@/types/app';
 
 // Base Configuration
 const API_BASE_URL = 'https://my.living-apps.de/rest';
@@ -468,30 +468,30 @@ export class LivingAppsService {
     return callApi('DELETE', `/apps/${APP_IDS.REPARATURAUFTRAEGE}/records/${id}`);
   }
 
-  // --- ERSATZTEILE ---
-  static async getErsatzteile(): Promise<Ersatzteile[]> {
-    const data = await callApi('GET', `/apps/${APP_IDS.ERSATZTEILE}/records`);
+  // --- TEILELAGER ---
+  static async getTeilelager(): Promise<Teilelager[]> {
+    const data = await callApi('GET', `/apps/${APP_IDS.TEILELAGER}/records`);
     const records = Object.entries(data).map(([id, rec]: [string, any]) => ({
       record_id: id, ...rec,
       createdat: rec.created_at ?? '', updatedat: rec.updated_at ?? null,
-    })) as Ersatzteile[];
-    return hydrateRecords(records, 'ersatzteile');
+    })) as Teilelager[];
+    return hydrateRecords(records, 'teilelager');
   }
-  static async getErsatzteileEntry(id: string): Promise<Ersatzteile | undefined> {
-    const data = await callApi('GET', `/apps/${APP_IDS.ERSATZTEILE}/records/${id}`);
-    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Ersatzteile;
-    return hydrateRecords([record], 'ersatzteile')[0];
+  static async getTeilelagerEntry(id: string): Promise<Teilelager | undefined> {
+    const data = await callApi('GET', `/apps/${APP_IDS.TEILELAGER}/records/${id}`);
+    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Teilelager;
+    return hydrateRecords([record], 'teilelager')[0];
   }
-  static async createErsatzteileEntry(fields: CreateErsatzteile): Promise<MutationResult> {
-    const data = await callApi('POST', `/apps/${APP_IDS.ERSATZTEILE}/records`, { fields: cleanFieldsForApi(fields as any, 'ersatzteile') });
+  static async createTeilelagerEntry(fields: CreateTeilelager): Promise<MutationResult> {
+    const data = await callApi('POST', `/apps/${APP_IDS.TEILELAGER}/records`, { fields: cleanFieldsForApi(fields as any, 'teilelager') });
     return { ...data, record_id: data.id };
   }
-  static async updateErsatzteileEntry(id: string, fields: Partial<CreateErsatzteile>): Promise<MutationResult> {
-    const data = await callApi('PATCH', `/apps/${APP_IDS.ERSATZTEILE}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'ersatzteile') });
+  static async updateTeilelagerEntry(id: string, fields: Partial<CreateTeilelager>): Promise<MutationResult> {
+    const data = await callApi('PATCH', `/apps/${APP_IDS.TEILELAGER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'teilelager') });
     return { ...data, record_id: data.id };
   }
-  static async deleteErsatzteileEntry(id: string) {
-    return callApi('DELETE', `/apps/${APP_IDS.ERSATZTEILE}/records/${id}`);
+  static async deleteTeilelagerEntry(id: string) {
+    return callApi('DELETE', `/apps/${APP_IDS.TEILELAGER}/records/${id}`);
   }
 
 }

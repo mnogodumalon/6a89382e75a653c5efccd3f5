@@ -47,7 +47,7 @@ export default function TeilelagerDetailPage() {
     if (!record) return;
     await LivingAppsService.deleteTeilelagerEntry(record.record_id);
     setDeleteOpen(false);
-    navigate('/ersatzteile');
+    navigate('/teilelager');
   }
 
   if (loading) {
@@ -59,7 +59,7 @@ export default function TeilelagerDetailPage() {
       <RecordViewEmpty
         title={t('not_found')}
         action={
-          <Button variant="ghost" onClick={() => navigate('/ersatzteile')}>
+          <Button variant="ghost" onClick={() => navigate('/teilelager')}>
             <IconArrowLeft className="h-4 w-4 mr-1.5" />
             {t('back')}
           </Button>
@@ -70,12 +70,12 @@ export default function TeilelagerDetailPage() {
 
   return (
     <RecordView
-      onBack={() => navigate('/ersatzteile')}
+      onBack={() => navigate('/teilelager')}
       onEdit={() => setEditing(true)}
       backLabel={t('back')}
       editLabel={t('edit_button')}
     >
-      <RecordHeader title={record.fields.bezeichnung ?? appLabel('ersatzteile')} />
+      <RecordHeader title={record.fields.bezeichnung ?? appLabel('teilelager')} />
 
       {(() => {
         const lookupLists: Record<string, unknown> = {
@@ -96,10 +96,10 @@ export default function TeilelagerDetailPage() {
       })()}
 
       <RecordSection title={t('details')} cols={2}>
-        <RecordField label={fieldLabel('ersatzteile', 'bezeichnung')} value={record.fields.bezeichnung} format="text" />
-        <RecordField label={fieldLabel('ersatzteile', 'lagerbestand')} value={record.fields.lagerbestand} format="text" />
-        <RecordField label={fieldLabel('ersatzteile', 'preis')} value={record.fields.preis} format="text" />
-        <RecordField label={fieldLabel('ersatzteile', 'mindestbestand')} value={record.fields.mindestbestand} format="text" />
+        <RecordField label={fieldLabel('teilelager', 'bezeichnung')} value={record.fields.bezeichnung} format="text" />
+        <RecordField label={fieldLabel('teilelager', 'lagerbestand')} value={record.fields.lagerbestand} format="text" />
+        <RecordField label={fieldLabel('teilelager', 'preis')} value={record.fields.preis} format="text" />
+        <RecordField label={fieldLabel('teilelager', 'mindestbestand')} value={record.fields.mindestbestand} format="text" />
       </RecordSection>
 
       <RecordAttachments appId={APP_IDS.TEILELAGER} recordId={record.record_id} />
@@ -125,7 +125,7 @@ export default function TeilelagerDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         onConfirm={handleDelete}
-        title={t('delete_entity', { entity: appLabel('ersatzteile') })}
+        title={t('delete_entity', { entity: appLabel('teilelager') })}
         description={t('confirm_delete_desc')}
       />
     </RecordView>

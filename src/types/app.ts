@@ -79,7 +79,7 @@ export interface Reparaturauftraege {
   };
 }
 
-export interface Ersatzteile {
+export interface Teilelager {
   record_id: string;
   /** The API field. */
   created_at: string;
@@ -101,7 +101,7 @@ export const APP_IDS = {
   LEIHRAEDER: '6a893fdc641de8c47248bb48',
   KUNDEN: '6a89381649b1e4adfb583623',
   REPARATURAUFTRAEGE: '6a893819520245c43dad9f5e',
-  ERSATZTEILE: '6a8938194cf2973db816a8b8',
+  TEILELAGER: '6a8938194cf2973db816a8b8',
 } as const;
 
 
@@ -143,7 +143,7 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'abgabedatum': 'date/date',
     'status': 'lookup/radio',
   },
-  'ersatzteile': {
+  'teilelager': {
     'bezeichnung': 'string/text',
     'lagerbestand': 'number',
     'preis': 'number',
@@ -164,4 +164,4 @@ type StripLookup<T> = {
 export type CreateLeihraeder = StripLookup<Leihraeder['fields']>;
 export type CreateKunden = StripLookup<Kunden['fields']>;
 export type CreateReparaturauftraege = StripLookup<Reparaturauftraege['fields']>;
-export type CreateErsatzteile = StripLookup<Ersatzteile['fields']>;
+export type CreateTeilelager = StripLookup<Teilelager['fields']>;

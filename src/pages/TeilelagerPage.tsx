@@ -100,8 +100,8 @@ export default function TeilelagerPage() {
 
   return (
     <PageShell
-      title={appLabel('ersatzteile')}
-      subtitle={`${records.length} ${t('in_system', { entity: appLabel('ersatzteile') })}`}
+      title={appLabel('teilelager')}
+      subtitle={`${records.length} ${t('in_system', { entity: appLabel('teilelager') })}`}
       action={
         <Button onClick={() => setDialogOpen(true)} className="shrink-0 rounded-full shadow-sm">
           <IconPlus className="h-4 w-4 mr-2" /> {t('add')}
@@ -111,7 +111,7 @@ export default function TeilelagerPage() {
       <div className="relative w-full max-w-sm">
         <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder={t('search_entity', { entity: appLabel('ersatzteile') })}
+          placeholder={t('search_entity', { entity: appLabel('teilelager') })}
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="pl-9"
@@ -123,25 +123,25 @@ export default function TeilelagerPage() {
             <TableRow className="border-b border-input">
               <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('bezeichnung')}>
                 <span className="inline-flex items-center gap-1">
-                  {fieldLabel('ersatzteile', 'bezeichnung')}
+                  {fieldLabel('teilelager', 'bezeichnung')}
                   {sortKey === 'bezeichnung' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
                 </span>
               </TableHead>
               <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('lagerbestand')}>
                 <span className="inline-flex items-center gap-1">
-                  {fieldLabel('ersatzteile', 'lagerbestand')}
+                  {fieldLabel('teilelager', 'lagerbestand')}
                   {sortKey === 'lagerbestand' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
                 </span>
               </TableHead>
               <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('preis')}>
                 <span className="inline-flex items-center gap-1">
-                  {fieldLabel('ersatzteile', 'preis')}
+                  {fieldLabel('teilelager', 'preis')}
                   {sortKey === 'preis' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
                 </span>
               </TableHead>
               <TableHead className="uppercase text-xs font-semibold text-secondary-foreground tracking-wider px-6 cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort('mindestbestand')}>
                 <span className="inline-flex items-center gap-1">
-                  {fieldLabel('ersatzteile', 'mindestbestand')}
+                  {fieldLabel('teilelager', 'mindestbestand')}
                   {sortKey === 'mindestbestand' ? (sortDir === 'asc' ? <IconArrowUp size={14} /> : <IconArrowDown size={14} />) : <IconArrowsUpDown size={14} className="opacity-30" />}
                 </span>
               </TableHead>
@@ -150,7 +150,7 @@ export default function TeilelagerPage() {
           </TableHeader>
           <TableBody>
             {sortRecords(filtered).map(record => (
-              <TableRow key={record.record_id} className="hover:bg-muted/50 transition-colors cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest('button, [role="checkbox"]')) return; navigate(`/ersatzteile/${record.record_id}`); }}>
+              <TableRow key={record.record_id} className="hover:bg-muted/50 transition-colors cursor-pointer" onClick={(e) => { if ((e.target as HTMLElement).closest('button, [role="checkbox"]')) return; navigate(`/teilelager/${record.record_id}`); }}>
                 <TableCell className="font-medium">{record.fields.bezeichnung ?? '—'}</TableCell>
                 <TableCell>{record.fields.lagerbestand ?? '—'}</TableCell>
                 <TableCell>{record.fields.preis ?? '—'}</TableCell>
@@ -170,7 +170,7 @@ export default function TeilelagerPage() {
             {filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-16 text-muted-foreground">
-                  {search ? t('no_results') : t('no_data_yet', { entity: appLabel('ersatzteile') })}
+                  {search ? t('no_results') : t('no_data_yet', { entity: appLabel('teilelager') })}
                 </TableCell>
               </TableRow>
             )}
@@ -192,7 +192,7 @@ export default function TeilelagerPage() {
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
-        title={t('delete_entity', { entity: appLabel('ersatzteile') })}
+        title={t('delete_entity', { entity: appLabel('teilelager') })}
         description={t('confirm_delete_desc')}
       />
 

@@ -2,15 +2,25 @@
   "version": 1,
   "changes": [
     {
-      "kind": "field_removed",
+      "kind": "label_changed",
+      "scope": "entity",
+      "entity": "teilelager",
+      "old_name": "Ersatzteile",
+      "new_name": "Teilelager",
+      "old_identifier": "ersatzteile",
+      "new_identifier": "teilelager"
+    },
+    {
+      "kind": "label_changed",
+      "scope": "field",
       "entity": "reparaturauftraege",
-      "field": "kostenvoranschlag",
-      "fulltype": "number",
-      "label": "Kostenvoranschlag (€)"
+      "field": "fahrrad_beschreibung",
+      "old_label": "Fahrrad-Beschreibung",
+      "new_label": "Fahrrad"
     }
   ],
   "counts": {
-    "field_removed": 1
+    "label_changed": 2
   },
-  "harmless_only": false
+  "harmless_only": true
 }

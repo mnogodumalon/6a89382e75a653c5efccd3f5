@@ -273,7 +273,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
         }
       }
       const photoContext = contextParts.length ? contextParts.join('\n') : undefined;
-      const schema = `{\n  "kunde": string | null, // Display name from Kunden (see <available-records>)\n  "fahrrad_beschreibung": string | null, // Fahrrad-Beschreibung\n  "problembeschreibung": string | null, // Problembeschreibung\n  "abgabedatum": string | null, // YYYY-MM-DD\n  "status": LookupValue | null, // Status (select one key: "angenommen" | "in_arbeit" | "fertig" | "abgeholt") mapping: angenommen=Angenommen, in_arbeit=In Arbeit, fertig=Fertig, abgeholt=Abgeholt\n}`;
+      const schema = `{\n  "kunde": string | null, // Display name from Kunden (see <available-records>)\n  "fahrrad_beschreibung": string | null, // Fahrrad\n  "problembeschreibung": string | null, // Problembeschreibung\n  "abgabedatum": string | null, // YYYY-MM-DD\n  "status": LookupValue | null, // Status (select one key: "angenommen" | "in_arbeit" | "fertig" | "abgeholt") mapping: angenommen=Angenommen, in_arbeit=In Arbeit, fertig=Fertig, abgeholt=Abgeholt\n}`;
       const raw = await extractFromInput<Record<string, unknown>>(schema, {
         dataUri: uri,
         userText: aiText.trim() || undefined,
@@ -484,7 +484,7 @@ export function ReparaturauftraegeDialog({ open, onClose, onSubmit, defaultValue
   //     kein passendes Backend-Feld in orderedFields) erscheinen NICHT als
   //     Input, sondern unten als kompakte 'Berechnungen'-Übersicht oder als
   //     Inline-Hint unter dem letzten beitragenden Input.
-  const FIELD_LABELS: Record<string, string> = {"kunde": "Kunde", "fahrrad_beschreibung": "Fahrrad-Beschreibung", "problembeschreibung": "Problembeschreibung", "abgabedatum": "Abgabedatum", "status": "Status"};
+  const FIELD_LABELS: Record<string, string> = {"kunde": "Kunde", "fahrrad_beschreibung": "Fahrrad", "problembeschreibung": "Problembeschreibung", "abgabedatum": "Abgabedatum", "status": "Status"};
   const CURRENCY_KEYS = new Set<string>([]);
   // Applookup-Referenz-Labels: pro applookup-Feld in dieser Form (ownKey)
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird

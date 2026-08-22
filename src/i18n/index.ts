@@ -897,7 +897,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "app_id": "6a893819520245c43dad9f5e",
         "fields": {
           "kunde": "Kunde",
-          "fahrrad_beschreibung": "Fahrrad-Beschreibung",
+          "fahrrad_beschreibung": "Fahrrad",
           "problembeschreibung": "Problembeschreibung",
           "abgabedatum": "Abgabedatum",
           "status": "Status"
@@ -911,8 +911,8 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           }
         }
       },
-      "ersatzteile": {
-        "name": "Ersatzteile",
+      "teilelager": {
+        "name": "Teilelager",
         "app_id": "6a8938194cf2973db816a8b8",
         "fields": {
           "bezeichnung": "Bezeichnung",
@@ -961,7 +961,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "app_id": "6a893819520245c43dad9f5e",
         "fields": {
           "kunde": "Customer",
-          "fahrrad_beschreibung": "Bike Description",
+          "fahrrad_beschreibung": "Bicycle",
           "problembeschreibung": "Problem Description",
           "abgabedatum": "Drop-off Date",
           "status": "Status"
@@ -970,16 +970,16 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "status": {
             "angenommen": "Accepted",
             "in_arbeit": "In Progress",
-            "fertig": "Done",
+            "fertig": "Completed",
             "abgeholt": "Picked Up"
           }
         }
       },
-      "ersatzteile": {
-        "name": "Spare Parts",
+      "teilelager": {
+        "name": "Parts Inventory",
         "app_id": "6a8938194cf2973db816a8b8",
         "fields": {
-          "bezeichnung": "Name",
+          "bezeichnung": "Description",
           "lagerbestand": "Stock",
           "preis": "Price (€)",
           "mindestbestand": "Minimum Stock"

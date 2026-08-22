@@ -42,10 +42,10 @@
  *   leihraeder: rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden
  *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
- *   ersatzteile: bezeichnung, lagerbestand, preis, mindestbestand
+ *   teilelager: bezeichnung, lagerbestand, preis, mindestbestand
  */
 import { useState, useMemo, type ReactNode } from 'react';
-import type { Leihraeder, Kunden, Reparaturauftraege, Ersatzteile } from '@/types/app';
+import type { Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { LivingAppsService, createRecordUrl } from '@/services/livingAppsService';
 import { enrichLeihraeder, enrichReparaturauftraege } from '@/lib/enrich';
@@ -61,8 +61,8 @@ import { KundenDialog, type KundenDialogDefaults } from '@/components/dialogs/Ku
 import { KundenDetails } from '@/components/details/KundenDetails';
 import { ReparaturauftraegeDialog, type ReparaturauftraegeDialogDefaults } from '@/components/dialogs/ReparaturauftraegeDialog';
 import { ReparaturauftraegeDetails } from '@/components/details/ReparaturauftraegeDetails';
-import { ErsatzteileDialog, type ErsatzteileDialogDefaults } from '@/components/dialogs/ErsatzteileDialog';
-import { ErsatzteileDetails } from '@/components/details/ErsatzteileDetails';
+import { TeilelagerDialog, type TeilelagerDialogDefaults } from '@/components/dialogs/TeilelagerDialog';
+import { TeilelagerDetails } from '@/components/details/TeilelagerDetails';
 import { AI_PHOTO_SCAN, AI_PHOTO_LOCATION } from '@/config/ai-features';
 import { t, appLabel } from '@/i18n';
 import { undoToast } from '@/lib/polish';
@@ -75,7 +75,7 @@ export type OverlayItem =
   | { type: 'leihraeder'; record: EnrichedLeihraeder }
   | { type: 'kunden'; record: Kunden }
   | { type: 'reparaturauftraege'; record: EnrichedReparaturauftraege }
-  | { type: 'ersatzteile'; record: Ersatzteile };
+  | { type: 'teilelager'; record: Teilelager };
 
 /** The useDashboardData() return — pass it in, never re-fetch inside. */
 export type EntityCrudData = ReturnType<typeof useDashboardData>;
@@ -104,11 +104,11 @@ export interface EntityCrud {
   leihraeder: EntityCrudApi<Leihraeder, LeihraederDialogDefaults>;
   kunden: EntityCrudApi<Kunden, KundenDialogDefaults>;
   reparaturauftraege: EntityCrudApi<Reparaturauftraege, ReparaturauftraegeDialogDefaults>;
-  ersatzteile: EntityCrudApi<Ersatzteile, ErsatzteileDialogDefaults>;
+  teilelager: EntityCrudApi<Teilelager, TeilelagerDialogDefaults>;
   /** The display-ready array per entity: Enriched* where an enrich function
    *  exists, the raw array otherwise. One key per entity so no page has to
    *  know which is which. Reuse these; never re-enrich in the page. */
-  enriched: { leihraeder: EnrichedLeihraeder[]; kunden: Kunden[]; reparaturauftraege: EnrichedReparaturauftraege[]; ersatzteile: Ersatzteile[] };
+  enriched: { leihraeder: EnrichedLeihraeder[]; kunden: Kunden[]; reparaturauftraege: EnrichedReparaturauftraege[]; teilelager: Teilelager[] };
 }
 
 export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions): EntityCrud {
@@ -116,7 +116,7 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
   const [leihraederDialog, setLeihraederDialog] = useState<{ defaults?: LeihraederDialogDefaults; editing?: Leihraeder } | null>(null);
   const [kundenDialog, setKundenDialog] = useState<{ defaults?: KundenDialogDefaults; editing?: Kunden } | null>(null);
   const [reparaturauftraegeDialog, setReparaturauftraegeDialog] = useState<{ defaults?: ReparaturauftraegeDialogDefaults; editing?: Reparaturauftraege } | null>(null);
-  const [ersatzteileDialog, setErsatzteileDialog] = useState<{ defaults?: ErsatzteileDialogDefaults; editing?: Ersatzteile } | null>(null);
+  const [teilelagerDialog, setTeilelagerDialog] = useState<{ defaults?: TeilelagerDialogDefaults; editing?: Teilelager } | null>(null);
   const enrichedLeihraeder = useMemo(() => enrichLeihraeder(data.leihraeder, { kundenMap: data.kundenMap }), [data.leihraeder, data.kundenMap]);
   const enrichedReparaturauftraege = useMemo(() => enrichReparaturauftraege(data.reparaturauftraege, { kundenMap: data.kundenMap }), [data.reparaturauftraege, data.kundenMap]);
 
@@ -205,29 +205,29 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
     }
   }
 
-  function detailErsatzteile(record: Ersatzteile, push = false) {
-    const item: OverlayItem = { type: 'ersatzteile', record };
+  function detailTeilelager(record: Teilelager, push = false) {
+    const item: OverlayItem = { type: 'teilelager', record };
     if (push) overlay.push(item); else overlay.replace(item);
   }
 
-  async function submitErsatzteile(fields: Ersatzteile['fields']) {
-    const editing = ersatzteileDialog?.editing;
+  async function submitTeilelager(fields: Teilelager['fields']) {
+    const editing = teilelagerDialog?.editing;
     if (editing) {
       const prev = editing;
-      data.setErsatzteile(list => list.map(r => (r.record_id === editing.record_id ? { ...r, fields } : r)));
+      data.setTeilelager(list => list.map(r => (r.record_id === editing.record_id ? { ...r, fields } : r)));
       try {
-        await LivingAppsService.updateErsatzteileEntry(editing.record_id, fields);
+        await LivingAppsService.updateTeilelagerEntry(editing.record_id, fields);
       } catch (err) {
         data.fetchAll();
         throw err;
       }
-      undoToast(`${appLabel('ersatzteile')} — ${t('crud_updated')}`, async () => {
-        data.setErsatzteile(list => list.map(r => (r.record_id === prev.record_id ? prev : r)));
-        try { await LivingAppsService.updateErsatzteileEntry(prev.record_id, prev.fields); } catch { data.fetchAll(); }
+      undoToast(`${appLabel('teilelager')} — ${t('crud_updated')}`, async () => {
+        data.setTeilelager(list => list.map(r => (r.record_id === prev.record_id ? prev : r)));
+        try { await LivingAppsService.updateTeilelagerEntry(prev.record_id, prev.fields); } catch { data.fetchAll(); }
       });
     } else {
-      await LivingAppsService.createErsatzteileEntry(fields);
-      undoToast(`${appLabel('ersatzteile')} — ${t('crud_created')}`);
+      await LivingAppsService.createTeilelagerEntry(fields);
+      undoToast(`${appLabel('teilelager')} — ${t('crud_created')}`);
       data.fetchAll();
     }
   }
@@ -263,14 +263,14 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
         enablePhotoScan={AI_PHOTO_SCAN['Reparaturauftraege']}
         enablePhotoLocation={AI_PHOTO_LOCATION['Reparaturauftraege']}
       />
-      <ErsatzteileDialog
-        open={ersatzteileDialog !== null}
-        onClose={() => setErsatzteileDialog(null)}
-        onSubmit={submitErsatzteile}
-        defaultValues={ersatzteileDialog?.defaults}
-        recordId={ersatzteileDialog?.editing?.record_id}
-        enablePhotoScan={AI_PHOTO_SCAN['Ersatzteile']}
-        enablePhotoLocation={AI_PHOTO_LOCATION['Ersatzteile']}
+      <TeilelagerDialog
+        open={teilelagerDialog !== null}
+        onClose={() => setTeilelagerDialog(null)}
+        onSubmit={submitTeilelager}
+        defaultValues={teilelagerDialog?.defaults}
+        recordId={teilelagerDialog?.editing?.record_id}
+        enablePhotoScan={AI_PHOTO_SCAN['Teilelager']}
+        enablePhotoLocation={AI_PHOTO_LOCATION['Teilelager']}
       />
       <RecordOverlayHost
         overlay={overlay}
@@ -318,11 +318,11 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
               </>
             );
           }
-          if (top.type === 'ersatzteile') {
+          if (top.type === 'teilelager') {
             return (
               <>
-                <RecordHeader title={top.record.fields.bezeichnung ?? appLabel('ersatzteile')} subtitle={undefined} />
-                <ErsatzteileDetails
+                <RecordHeader title={top.record.fields.bezeichnung ?? appLabel('teilelager')} subtitle={undefined} />
+                <TeilelagerDetails
                   record={top.record}
                 />
               </>
@@ -335,7 +335,7 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
           if (top.type === 'leihraeder') setLeihraederDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'kunden') setKundenDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'reparaturauftraege') setReparaturauftraegeDialog({ editing: top.record, defaults: top.record.fields });
-          if (top.type === 'ersatzteile') setErsatzteileDialog({ editing: top.record, defaults: top.record.fields });
+          if (top.type === 'teilelager') setTeilelagerDialog({ editing: top.record, defaults: top.record.fields });
         }}
       />
     </>
@@ -359,11 +359,11 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
       openEdit: (record: Reparaturauftraege) => setReparaturauftraegeDialog({ editing: record, defaults: record.fields }),
       openDetail: (record: Reparaturauftraege) => detailReparaturauftraege(record, false),
     },
-    ersatzteile: {
-      openCreate: (defaults?: ErsatzteileDialogDefaults) => setErsatzteileDialog({ defaults }),
-      openEdit: (record: Ersatzteile) => setErsatzteileDialog({ editing: record, defaults: record.fields }),
-      openDetail: (record: Ersatzteile) => detailErsatzteile(record, false),
+    teilelager: {
+      openCreate: (defaults?: TeilelagerDialogDefaults) => setTeilelagerDialog({ defaults }),
+      openEdit: (record: Teilelager) => setTeilelagerDialog({ editing: record, defaults: record.fields }),
+      openDetail: (record: Teilelager) => detailTeilelager(record, false),
     },
-    enriched: { leihraeder: enrichedLeihraeder, kunden: data.kunden, reparaturauftraege: enrichedReparaturauftraege, ersatzteile: data.ersatzteile },
+    enriched: { leihraeder: enrichedLeihraeder, kunden: data.kunden, reparaturauftraege: enrichedReparaturauftraege, teilelager: data.teilelager },
   };
 }

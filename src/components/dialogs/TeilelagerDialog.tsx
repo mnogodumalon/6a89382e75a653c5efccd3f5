@@ -1,16 +1,16 @@
 /**
- * ErsatzteileDialog — pre-generated create/edit dialog for Ersatzteile.
+ * TeilelagerDialog — pre-generated create/edit dialog for Teilelager.
  *
  * Props: open, onClose, onSubmit(fields) => Promise<void>, defaultValues?,
  * recordId? (pass when EDITING — enables the attachments section),
  * enablePhotoScan?, enablePhotoLocation?.
  *
  * defaultValues is SHAPE-TOLERANT and its prop type is the EXPORTED
- * ErsatzteileDialogDefaults — NOT the entity field type: lookup fields accept
+ * TeilelagerDialogDefaults — NOT the entity field type: lookup fields accept
  * the bare KEY string (or LookupValue), applookup fields the bare record id
  * (or record URL); the dialog normalizes. Type prefill STATE with the export:
- *  ❌ useState<Partial<Ersatzteile['fields']>>({ … })   // LookupValue fields reject string prefills (TS2322)
- *  ✓ useState<ErsatzteileDialogDefaults | undefined>(undefined)
+ *  ❌ useState<Partial<Teilelager['fields']>>({ … })   // LookupValue fields reject string prefills (TS2322)
+ *  ✓ useState<TeilelagerDialogDefaults | undefined>(undefined)
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import type { Teilelager } from '@/types/app';
@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { ComputedContext } from '@/config/form-enhancements/types';
 import { applyFieldOrder, flattenFieldOrder, applyDefaults, evalComputed, numberInputProps, clampNumberValue, classifyComputed, extractApplookupRefs, mergeApplookupRefs, resolveApplookupRef } from '@/config/form-enhancements/types';
-import { formEnhancements, computedDeps, computedApplookupRefs } from '@/config/form-enhancements/Ersatzteile';
+import { formEnhancements, computedDeps, computedApplookupRefs } from '@/config/form-enhancements/Teilelager';
 import { AttachmentsSection } from '@/components/AttachmentsSection';
 import { t, appLabel, fieldLabel, lookupLabel, localeTag, CURRENCY } from '@/i18n';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,24 +33,24 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { IconAlertCircle, IconCamera, IconChevronDown, IconCircleCheck, IconClipboard, IconFileText, IconLoader2, IconPhotoPlus, IconSparkles, IconUpload, IconX } from '@tabler/icons-react';
 import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode } from '@/lib/ai';
 
-/** Widened prefill type for ErsatzteileDialog.defaultValues — see file header. */
-export type ErsatzteileDialogDefaults = Teilelager['fields'];
+/** Widened prefill type for TeilelagerDialog.defaultValues — see file header. */
+export type TeilelagerDialogDefaults = Teilelager['fields'];
 
-interface ErsatzteileDialogProps {
+interface TeilelagerDialogProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (fields: Teilelager['fields']) => Promise<void>;
   /** SHAPE-TOLERANT: lookup fields accept the bare key (string) or the
    *  LookupValue object; applookup fields the bare record id or the full
    *  record URL — the dialog normalizes both. */
-  defaultValues?: ErsatzteileDialogDefaults;
+  defaultValues?: TeilelagerDialogDefaults;
   /** Record id when editing — enables the attachments section. Omit on create. */
   recordId?: string;
   enablePhotoScan?: boolean;
   enablePhotoLocation?: boolean;
 }
 
-export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, recordId, enablePhotoScan = true, enablePhotoLocation = true }: ErsatzteileDialogProps) {
+export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recordId, enablePhotoScan = true, enablePhotoLocation = true }: TeilelagerDialogProps) {
   const [fields, setFields] = useState<Partial<Teilelager['fields']>>({});
   const [saving, setSaving] = useState(false);
   const normalizedDefaults = defaultValues as Record<string, unknown> | undefined;
@@ -226,8 +226,12 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
         photoContext,
         intent: DIALOG_INTENT,
       });
-      setFields((prev: Partial<Teilelager['fields']>) => {
+      setFields(prev => {
         const merged = { ...prev } as Record<string, unknown>;
+        function matchName(name: string, candidates: string[]): boolean {
+          const n = name.toLowerCase().trim();
+          return candidates.some(c => c.toLowerCase().includes(n) || n.includes(c.toLowerCase()));
+        }
         for (const [k, v] of Object.entries(raw)) {
           if (v != null) merged[k] = v;
         }
@@ -273,13 +277,13 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
   }, []);
 
   const DIALOG_INTENT = defaultValues
-    ? t('edit_entity', { entity: appLabel('ersatzteile') })
-    : t('new_entity', { entity: appLabel('ersatzteile') });
+    ? t('edit_entity', { entity: appLabel('teilelager') })
+    : t('new_entity', { entity: appLabel('teilelager') });
 
   const fieldBlocks: Record<string, React.ReactNode> = {
     'bezeichnung': (
       <div key="bezeichnung" className="space-y-1.5">
-        <Label htmlFor="bezeichnung">{fieldLabel('ersatzteile', 'bezeichnung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
+        <Label htmlFor="bezeichnung">{fieldLabel('teilelager', 'bezeichnung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="bezeichnung"
           placeholder=""
@@ -294,7 +298,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
     ),
     'lagerbestand': (
       <div key="lagerbestand" className="space-y-1.5">
-        <Label htmlFor="lagerbestand">{fieldLabel('ersatzteile', 'lagerbestand')} <span className="text-destructive" aria-hidden="true">*</span></Label>
+        <Label htmlFor="lagerbestand">{fieldLabel('teilelager', 'lagerbestand')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="lagerbestand"
           type="number"
@@ -311,7 +315,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
     ),
     'preis': (
       <div key="preis" className="space-y-1.5">
-        <Label htmlFor="preis">{fieldLabel('ersatzteile', 'preis')} <span className="text-destructive" aria-hidden="true">*</span></Label>
+        <Label htmlFor="preis">{fieldLabel('teilelager', 'preis')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="preis"
           type="number"
@@ -328,7 +332,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
     ),
     'mindestbestand': (
       <div key="mindestbestand" className="space-y-1.5">
-        <Label htmlFor="mindestbestand">{fieldLabel('ersatzteile', 'mindestbestand')}</Label>
+        <Label htmlFor="mindestbestand">{fieldLabel('teilelager', 'mindestbestand')}</Label>
         <Input
           id="mindestbestand"
           type="number"

@@ -141,7 +141,7 @@
         },
         {
           "key": "fahrrad_beschreibung",
-          "label": "Fahrrad-Beschreibung",
+          "label": "Fahrrad",
           "type": "string/text"
         },
         {
@@ -167,7 +167,7 @@
           },
           {
             "key": "fahrrad_beschreibung",
-            "label": "Fahrrad-Beschreibung",
+            "label": "Fahrrad",
             "type": "string/text",
             "required": true
           },
@@ -211,8 +211,8 @@
       }
     },
     {
-      "file": "src/components/dialogs/ErsatzteileDialog.tsx",
-      "entity": "Ersatzteile",
+      "file": "src/components/dialogs/TeilelagerDialog.tsx",
+      "entity": "Teilelager",
       "entity_context": "Fahrradwerkstatt Verwaltung",
       "fields": [
         {
@@ -237,7 +237,7 @@
         }
       ],
       "formEnhancements": {
-        "configPath": "src/config/form-enhancements/Ersatzteile.ts",
+        "configPath": "src/config/form-enhancements/Teilelager.ts",
         "fields": [
           {
             "key": "bezeichnung",
