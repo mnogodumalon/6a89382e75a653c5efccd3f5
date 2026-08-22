@@ -26,7 +26,17 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 
-const HUBS = {};
+const HUBS = {
+  "kunden": {
+    "component": "KundenDetails",
+    "file": "src/components/details/KundenDetails.tsx",
+    "satellites": [
+      "leihvorgaenge",
+      "leihraeder",
+      "reparaturauftraege"
+    ]
+  }
+};
 
 const hubKeys = Object.keys(HUBS);
 if (hubKeys.length === 0) {

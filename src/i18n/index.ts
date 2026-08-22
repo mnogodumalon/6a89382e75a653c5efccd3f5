@@ -871,6 +871,28 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
   "de": {
     "appgroup": "Fahrradwerkstatt Verwaltung",
     "apps": {
+      "leihvorgaenge": {
+        "name": "Leihvorgänge",
+        "app_id": "6a8960099b01807864858868",
+        "fields": {
+          "leihrad": "Leihrad",
+          "kunde": "Kunde",
+          "startdatum": "Ausleihdatum",
+          "enddatum": "Rückgabedatum",
+          "bild_vorher": "Bild vor Ausleihe",
+          "zustand_vorher": "Zustand vor Ausleihe",
+          "bild_nachher": "Bild nach Rückgabe",
+          "zustand_nachher": "Zustand nach Rückgabe",
+          "status": "Status"
+        },
+        "lookups": {
+          "status": {
+            "aktiv": "Aktiv",
+            "zurueckgegeben": "Zurückgegeben",
+            "ueberfaellig": "Überfällig"
+          }
+        }
+      },
       "leihraeder": {
         "name": "Leihräder",
         "app_id": "6a893fdc641de8c47248bb48",
@@ -936,15 +958,37 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
   "en": {
     "appgroup": "Bicycle Workshop Management",
     "apps": {
+      "leihvorgaenge": {
+        "name": "Rental Transactions",
+        "app_id": "6a8960099b01807864858868",
+        "fields": {
+          "leihrad": "Rental Bike",
+          "kunde": "Customer",
+          "startdatum": "Rental Date",
+          "enddatum": "Return Date",
+          "bild_vorher": "Image Before Rental",
+          "zustand_vorher": "Condition Before Rental",
+          "bild_nachher": "Image After Return",
+          "zustand_nachher": "Condition After Return",
+          "status": "Status"
+        },
+        "lookups": {
+          "status": {
+            "aktiv": "Active",
+            "zurueckgegeben": "Returned",
+            "ueberfaellig": "Overdue"
+          }
+        }
+      },
       "leihraeder": {
         "name": "Rental Bikes",
         "app_id": "6a893fdc641de8c47248bb48",
         "fields": {
-          "bild_fahrrad": "Image of the Bike",
+          "bild_fahrrad": "Image of Bike",
           "rahmennummer": "Frame Number",
           "groesse": "Size",
-          "tagespreis": "Day Rate (€)",
-          "verliehen_an": "Rented to"
+          "tagespreis": "Daily Rate (€)",
+          "verliehen_an": "Rented To"
         },
         "lookups": {
           "groesse": {
@@ -971,7 +1015,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
         "app_id": "6a893819520245c43dad9f5e",
         "fields": {
           "kunde": "Customer",
-          "fahrrad_beschreibung": "Bike",
+          "fahrrad_beschreibung": "Bicycle",
           "problembeschreibung": "Problem Description",
           "abgabedatum": "Drop-off Date",
           "status": "Status"

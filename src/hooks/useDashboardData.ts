@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
 import { LivingAppsService } from '@/services/livingAppsService';
 import { t } from '@/i18n';
 
@@ -14,6 +14,7 @@ import { t } from '@/i18n';
  *  There is no other mechanism (no `__optimistic`, no `mutate`).
  */
 export function useDashboardData() {
+  const [leihvorgaenge, setLeihvorgaenge] = useState<Leihvorgaenge[]>([]);
   const [leihraeder, setLeihraeder] = useState<Leihraeder[]>([]);
   const [kunden, setKunden] = useState<Kunden[]>([]);
   const [reparaturauftraege, setReparaturauftraege] = useState<Reparaturauftraege[]>([]);
@@ -24,12 +25,14 @@ export function useDashboardData() {
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const [leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+      const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+        LivingAppsService.getLeihvorgaenge(),
         LivingAppsService.getLeihraeder(),
         LivingAppsService.getKunden(),
         LivingAppsService.getReparaturauftraege(),
         LivingAppsService.getTeilelager(),
       ]);
+      setLeihvorgaenge(leihvorgaengeData);
       setLeihraeder(leihraederData);
       setKunden(kundenData);
       setReparaturauftraege(reparaturauftraegeData);
@@ -47,12 +50,14 @@ export function useDashboardData() {
   useEffect(() => {
     async function silentRefresh() {
       try {
-        const [leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+        const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+          LivingAppsService.getLeihvorgaenge(),
           LivingAppsService.getLeihraeder(),
           LivingAppsService.getKunden(),
           LivingAppsService.getReparaturauftraege(),
           LivingAppsService.getTeilelager(),
         ]);
+        setLeihvorgaenge(leihvorgaengeData);
         setLeihraeder(leihraederData);
         setKunden(kundenData);
         setReparaturauftraege(reparaturauftraegeData);
@@ -66,11 +71,17 @@ export function useDashboardData() {
     return () => window.removeEventListener('dashboard-refresh', handleRefresh);
   }, []);
 
+  const leihraederMap = useMemo(() => {
+    const m = new Map<string, Leihraeder>();
+    leihraeder.forEach(r => m.set(r.record_id, r));
+    return m;
+  }, [leihraeder]);
+
   const kundenMap = useMemo(() => {
     const m = new Map<string, Kunden>();
     kunden.forEach(r => m.set(r.record_id, r));
     return m;
   }, [kunden]);
 
-  return { leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, teilelager, setTeilelager, loading, error, fetchAll, kundenMap };
+  return { leihvorgaenge, setLeihvorgaenge, leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, teilelager, setTeilelager, loading, error, fetchAll, leihraederMap, kundenMap };
 }

@@ -1,4 +1,4 @@
-import type { Kunden, Leihraeder, Reparaturauftraege } from '@/types/app';
+import type { Kunden, Leihvorgaenge, Leihraeder, Reparaturauftraege } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { extractRecordId } from '@/services/livingAppsService';
 import {
@@ -10,6 +10,12 @@ import { SatelliteSection } from '@/components/SatelliteSection';
 export interface KundenDetailsProps {
   /** Der Record — enriched oder roh; alle Felder werden hier gerendert. */
   record: Kunden;
+  /** 1:N „Leihvorgänge" (kunde): VOLLE Liste — der Block filtert auf diesen Record. */
+  leihvorgaengeList: Leihvorgaenge[];
+  /** Zeilen-Klick → overlay.push auf das Leihvorgaenge-Detail (nie der Edit-Dialog). */
+  onOpenLeihvorgaenge: (record: Leihvorgaenge) => void;
+  /** Kontextuelles „+": öffnet den Leihvorgaenge-Dialog mit diesem Record vorgesetzt. */
+  onAddLeihvorgaenge: () => void;
   /** 1:N „Leihräder" (verliehen_an): VOLLE Liste — der Block filtert auf diesen Record. */
   leihraederList: Leihraeder[];
   /** Zeilen-Klick → overlay.push auf das Leihraeder-Detail (nie der Edit-Dialog). */
@@ -26,6 +32,9 @@ export interface KundenDetailsProps {
 
 export function KundenDetails({
   record,
+  leihvorgaengeList,
+  onOpenLeihvorgaenge,
+  onAddLeihvorgaenge,
   leihraederList,
   onOpenLeihraeder,
   onAddLeihraeder,
@@ -42,6 +51,15 @@ export function KundenDetails({
         <RecordField label={fieldLabel('kunden', 'email')} value={record.fields.email} format="email" />
         <RecordField label={fieldLabel('kunden', 'stammkunde')} value={record.fields.stammkunde} format="bool" />
       </RecordSection>
+
+      <SatelliteSection
+        title={appLabel('leihvorgaenge')}
+        items={leihvorgaengeList.filter(r => extractRecordId(r.fields.kunde) === record.record_id)}
+        map={r => ({ name: appLabel('leihvorgaenge'), meta: r.fields.startdatum })}
+        onOpen={onOpenLeihvorgaenge}
+        onAdd={onAddLeihvorgaenge}
+        getKey={r => r.record_id}
+      />
 
       <SatelliteSection
         title={appLabel('leihraeder')}

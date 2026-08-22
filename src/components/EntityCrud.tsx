@@ -8,7 +8,7 @@
  *   const crud = useEntityCrud(data, {
  *     // optional — the ONE semantic slot on the overlay: the record's next
  *     // workflow step. Return undefined for types without one.
- *     footer: (top) => top.type === 'leihraeder'
+ *     footer: (top) => top.type === 'leihvorgaenge'
  *       ? { label: …, onClick: () => … }
  *       : undefined,
  *   });
@@ -16,14 +16,14 @@
  *   `top.type` is the SAME camelCase key as `crud.<entity>` — one spelling
  *   per entity, everywhere in this API.
  *   …
- *   crud.leihraeder.openCreate({ …defaults })   // create dialog, prefilled — defaults are
+ *   crud.leihvorgaenge.openCreate({ …defaults })   // create dialog, prefilled — defaults are
  *                                       // shape-tolerant: bare lookup keys / record ids are fine
- *   crud.leihraeder.openEdit(record)            // edit dialog (recordId + defaults wired)
- *   crud.leihraeder.openDetail(record)          // record overlay — pass the RAW record,
+ *   crud.leihvorgaenge.openEdit(record)            // edit dialog (recordId + defaults wired)
+ *   crud.leihvorgaenge.openDetail(record)          // record overlay — pass the RAW record,
  *                                       // enrichment is resolved inside
  *   crud.overlay                         // RecordOverlayStack<OverlayItem> for drills:
  *                                       // push / pop / replace / close
- *   crud.enriched.leihraeder              // the display-ready array for EVERY entity —
+ *   crud.enriched.leihvorgaenge              // the display-ready array for EVERY entity —
  *                                       // Enriched* where relations exist, the raw array
  *                                       // otherwise. Reuse these; never call enrich*()
  *                                       // in the page, and never guess which entity has
@@ -39,22 +39,25 @@
  *
  * Overlay content per entity (the host renders these — you never compose
  * Details blocks yourself):
- *   leihraeder: bild_fahrrad, rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden
- *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
+ *   leihvorgaenge: leihrad, kunde, startdatum, enddatum, bild_vorher, zustand_vorher, bild_nachher, zustand_nachher, …  ·  → leihraeder · → kunden
+ *   leihraeder: bild_fahrrad, rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden · ← leihvorgaenge (list + contextual +)
+ *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihvorgaenge (list + contextual +) · ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
  *   teilelager: bezeichnung, lagerbestand, preis, mindestbestand
  */
 import { useState, useMemo, type ReactNode } from 'react';
-import type { Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { LivingAppsService, createRecordUrl } from '@/services/livingAppsService';
-import { enrichLeihraeder, enrichReparaturauftraege } from '@/lib/enrich';
-import type { EnrichedLeihraeder, EnrichedReparaturauftraege } from '@/types/enriched';
+import { enrichLeihvorgaenge, enrichLeihraeder, enrichReparaturauftraege } from '@/lib/enrich';
+import type { EnrichedLeihvorgaenge, EnrichedLeihraeder, EnrichedReparaturauftraege } from '@/types/enriched';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import {
   useRecordOverlayStack, RecordOverlayHost, RecordHeader,
   type RecordOverlayStack,
 } from '@/components/widgets/RecordView';
+import { LeihvorgaengeDialog, type LeihvorgaengeDialogDefaults } from '@/components/dialogs/LeihvorgaengeDialog';
+import { LeihvorgaengeDetails } from '@/components/details/LeihvorgaengeDetails';
 import { LeihraederDialog, type LeihraederDialogDefaults } from '@/components/dialogs/LeihraederDialog';
 import { LeihraederDetails } from '@/components/details/LeihraederDetails';
 import { KundenDialog, type KundenDialogDefaults } from '@/components/dialogs/KundenDialog';
@@ -72,6 +75,7 @@ import { formatDate } from '@/lib/formatters';
 // flows: Enriched* where enrichment exists, the raw record type otherwise.
 // The host resolves enrichment itself; pages pass raw records everywhere.
 export type OverlayItem =
+  | { type: 'leihvorgaenge'; record: EnrichedLeihvorgaenge }
   | { type: 'leihraeder'; record: EnrichedLeihraeder }
   | { type: 'kunden'; record: Kunden }
   | { type: 'reparaturauftraege'; record: EnrichedReparaturauftraege }
@@ -101,6 +105,7 @@ export interface EntityCrud {
   overlay: RecordOverlayStack<OverlayItem>;
   /** Render ONCE at the end of the page JSX — all dialogs + the overlay host. */
   surfaces: ReactNode;
+  leihvorgaenge: EntityCrudApi<Leihvorgaenge, LeihvorgaengeDialogDefaults>;
   leihraeder: EntityCrudApi<Leihraeder, LeihraederDialogDefaults>;
   kunden: EntityCrudApi<Kunden, KundenDialogDefaults>;
   reparaturauftraege: EntityCrudApi<Reparaturauftraege, ReparaturauftraegeDialogDefaults>;
@@ -108,17 +113,48 @@ export interface EntityCrud {
   /** The display-ready array per entity: Enriched* where an enrich function
    *  exists, the raw array otherwise. One key per entity so no page has to
    *  know which is which. Reuse these; never re-enrich in the page. */
-  enriched: { leihraeder: EnrichedLeihraeder[]; kunden: Kunden[]; reparaturauftraege: EnrichedReparaturauftraege[]; teilelager: Teilelager[] };
+  enriched: { leihvorgaenge: EnrichedLeihvorgaenge[]; leihraeder: EnrichedLeihraeder[]; kunden: Kunden[]; reparaturauftraege: EnrichedReparaturauftraege[]; teilelager: Teilelager[] };
 }
 
 export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions): EntityCrud {
   const overlay = useRecordOverlayStack<OverlayItem>();
+  const [leihvorgaengeDialog, setLeihvorgaengeDialog] = useState<{ defaults?: LeihvorgaengeDialogDefaults; editing?: Leihvorgaenge } | null>(null);
   const [leihraederDialog, setLeihraederDialog] = useState<{ defaults?: LeihraederDialogDefaults; editing?: Leihraeder } | null>(null);
   const [kundenDialog, setKundenDialog] = useState<{ defaults?: KundenDialogDefaults; editing?: Kunden } | null>(null);
   const [reparaturauftraegeDialog, setReparaturauftraegeDialog] = useState<{ defaults?: ReparaturauftraegeDialogDefaults; editing?: Reparaturauftraege } | null>(null);
   const [teilelagerDialog, setTeilelagerDialog] = useState<{ defaults?: TeilelagerDialogDefaults; editing?: Teilelager } | null>(null);
+  const enrichedLeihvorgaenge = useMemo(() => enrichLeihvorgaenge(data.leihvorgaenge, { leihraederMap: data.leihraederMap, kundenMap: data.kundenMap }), [data.leihvorgaenge, data.leihraederMap, data.kundenMap]);
   const enrichedLeihraeder = useMemo(() => enrichLeihraeder(data.leihraeder, { kundenMap: data.kundenMap }), [data.leihraeder, data.kundenMap]);
   const enrichedReparaturauftraege = useMemo(() => enrichReparaturauftraege(data.reparaturauftraege, { kundenMap: data.kundenMap }), [data.reparaturauftraege, data.kundenMap]);
+
+  function detailLeihvorgaenge(record: Leihvorgaenge, push = false) {
+    const rec = enrichedLeihvorgaenge.find(r => r.record_id === record.record_id);
+    if (!rec) return;
+    const item: OverlayItem = { type: 'leihvorgaenge', record: rec };
+    if (push) overlay.push(item); else overlay.replace(item);
+  }
+
+  async function submitLeihvorgaenge(fields: Leihvorgaenge['fields']) {
+    const editing = leihvorgaengeDialog?.editing;
+    if (editing) {
+      const prev = editing;
+      data.setLeihvorgaenge(list => list.map(r => (r.record_id === editing.record_id ? { ...r, fields } : r)));
+      try {
+        await LivingAppsService.updateLeihvorgaengeEntry(editing.record_id, fields);
+      } catch (err) {
+        data.fetchAll();
+        throw err;
+      }
+      undoToast(`${appLabel('leihvorgaenge')} — ${t('crud_updated')}`, async () => {
+        data.setLeihvorgaenge(list => list.map(r => (r.record_id === prev.record_id ? prev : r)));
+        try { await LivingAppsService.updateLeihvorgaengeEntry(prev.record_id, prev.fields); } catch { data.fetchAll(); }
+      });
+    } else {
+      await LivingAppsService.createLeihvorgaengeEntry(fields);
+      undoToast(`${appLabel('leihvorgaenge')} — ${t('crud_created')}`);
+      data.fetchAll();
+    }
+  }
 
   function detailLeihraeder(record: Leihraeder, push = false) {
     const rec = enrichedLeihraeder.find(r => r.record_id === record.record_id);
@@ -234,6 +270,17 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
 
   const surfaces = (
     <>
+      <LeihvorgaengeDialog
+        open={leihvorgaengeDialog !== null}
+        onClose={() => setLeihvorgaengeDialog(null)}
+        onSubmit={submitLeihvorgaenge}
+        defaultValues={leihvorgaengeDialog?.defaults}
+        recordId={leihvorgaengeDialog?.editing?.record_id}
+        leihraederList={data.leihraeder}
+        kundenList={data.kunden}
+        enablePhotoScan={AI_PHOTO_SCAN['Leihvorgaenge']}
+        enablePhotoLocation={AI_PHOTO_LOCATION['Leihvorgaenge']}
+      />
       <LeihraederDialog
         open={leihraederDialog !== null}
         onClose={() => setLeihraederDialog(null)}
@@ -278,6 +325,20 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
         size={options?.size}
         footer={options?.footer}
         render={(top) => {
+          if (top.type === 'leihvorgaenge') {
+            return (
+              <>
+                <RecordHeader title={appLabel('leihvorgaenge')} subtitle={top.record.fields.startdatum ? formatDate(top.record.fields.startdatum) : undefined} />
+                <LeihvorgaengeDetails
+                  record={top.record}
+                  leihraederList={data.leihraeder}
+                  onOpenLeihraeder={(r) => detailLeihraeder(r, true)}
+                  kundenList={data.kunden}
+                  onOpenKunden={(r) => detailKunden(r, true)}
+                />
+              </>
+            );
+          }
           if (top.type === 'leihraeder') {
             return (
               <>
@@ -286,6 +347,9 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
                   record={top.record}
                   kundenList={data.kunden}
                   onOpenKunden={(r) => detailKunden(r, true)}
+                  leihvorgaengeList={data.leihvorgaenge}
+                  onOpenLeihvorgaenge={(r) => detailLeihvorgaenge(r, true)}
+                  onAddLeihvorgaenge={() => setLeihvorgaengeDialog({ defaults: { leihrad: createRecordUrl(APP_IDS.LEIHRAEDER, top.record.record_id) } })}
                 />
               </>
             );
@@ -296,6 +360,9 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
                 <RecordHeader title={top.record.fields.vorname ?? appLabel('kunden')} subtitle={undefined} />
                 <KundenDetails
                   record={top.record}
+                  leihvorgaengeList={data.leihvorgaenge}
+                  onOpenLeihvorgaenge={(r) => detailLeihvorgaenge(r, true)}
+                  onAddLeihvorgaenge={() => setLeihvorgaengeDialog({ defaults: { kunde: createRecordUrl(APP_IDS.KUNDEN, top.record.record_id) } })}
                   leihraederList={data.leihraeder}
                   onOpenLeihraeder={(r) => detailLeihraeder(r, true)}
                   onAddLeihraeder={() => setLeihraederDialog({ defaults: { verliehen_an: createRecordUrl(APP_IDS.KUNDEN, top.record.record_id) } })}
@@ -332,6 +399,7 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
         }}
         onEdit={(top) => {
           overlay.close();
+          if (top.type === 'leihvorgaenge') setLeihvorgaengeDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'leihraeder') setLeihraederDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'kunden') setKundenDialog({ editing: top.record, defaults: top.record.fields });
           if (top.type === 'reparaturauftraege') setReparaturauftraegeDialog({ editing: top.record, defaults: top.record.fields });
@@ -344,6 +412,11 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
   return {
     overlay,
     surfaces,
+    leihvorgaenge: {
+      openCreate: (defaults?: LeihvorgaengeDialogDefaults) => setLeihvorgaengeDialog({ defaults }),
+      openEdit: (record: Leihvorgaenge) => setLeihvorgaengeDialog({ editing: record, defaults: record.fields }),
+      openDetail: (record: Leihvorgaenge) => detailLeihvorgaenge(record, false),
+    },
     leihraeder: {
       openCreate: (defaults?: LeihraederDialogDefaults) => setLeihraederDialog({ defaults }),
       openEdit: (record: Leihraeder) => setLeihraederDialog({ editing: record, defaults: record.fields }),
@@ -364,6 +437,6 @@ export function useEntityCrud(data: EntityCrudData, options?: EntityCrudOptions)
       openEdit: (record: Teilelager) => setTeilelagerDialog({ editing: record, defaults: record.fields }),
       openDetail: (record: Teilelager) => detailTeilelager(record, false),
     },
-    enriched: { leihraeder: enrichedLeihraeder, kunden: data.kunden, reparaturauftraege: enrichedReparaturauftraege, teilelager: data.teilelager },
+    enriched: { leihvorgaenge: enrichedLeihvorgaenge, leihraeder: enrichedLeihraeder, kunden: data.kunden, reparaturauftraege: enrichedReparaturauftraege, teilelager: data.teilelager },
   };
 }

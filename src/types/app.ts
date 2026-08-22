@@ -23,6 +23,29 @@ export interface AttachmentInput {
   active?: boolean;
 }
 
+export interface Leihvorgaenge {
+  record_id: string;
+  /** The API field. */
+  created_at: string;
+  updated_at: string | null;
+  /** Alias of created_at, filled by the read helpers. The API sends
+   *  snake_case only — reading `createdat` off a raw record yields
+   *  undefined, which type-checks and then crashes at runtime. */
+  createdat: string;
+  updatedat: string | null;
+  fields: {
+    leihrad?: string; // applookup -> URL zu 'Leihraeder' Record
+    kunde?: string; // applookup -> URL zu 'Kunden' Record
+    startdatum?: string; // Format: YYYY-MM-DD oder ISO String
+    enddatum?: string; // Format: YYYY-MM-DD oder ISO String
+    bild_vorher?: string;
+    zustand_vorher?: string;
+    bild_nachher?: string;
+    zustand_nachher?: string;
+    status?: LookupValue;
+  };
+}
+
 export interface Leihraeder {
   record_id: string;
   /** The API field. */
@@ -99,6 +122,7 @@ export interface Teilelager {
 }
 
 export const APP_IDS = {
+  LEIHVORGAENGE: '6a8960099b01807864858868',
   LEIHRAEDER: '6a893fdc641de8c47248bb48',
   KUNDEN: '6a89381649b1e4adfb583623',
   REPARATURAUFTRAEGE: '6a893819520245c43dad9f5e',
@@ -107,6 +131,9 @@ export const APP_IDS = {
 
 
 export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: string}[]>> = {
+  'leihvorgaenge': {
+    status: [{ key: "aktiv", get label() { return lookupLabel('leihvorgaenge', 'status', "aktiv") ?? "Aktiv"; } }, { key: "zurueckgegeben", get label() { return lookupLabel('leihvorgaenge', 'status', "zurueckgegeben") ?? "Zurückgegeben"; } }, { key: "ueberfaellig", get label() { return lookupLabel('leihvorgaenge', 'status', "ueberfaellig") ?? "Überfällig"; } }],
+  },
   'leihraeder': {
     groesse: [{ key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }, { key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }],
   },
@@ -124,6 +151,17 @@ export function lookupOption(app: string, field: string, key: string): LookupVal
 }
 
 export const FIELD_TYPES: Record<string, Record<string, string>> = {
+  'leihvorgaenge': {
+    'leihrad': 'applookup/select',
+    'kunde': 'applookup/select',
+    'startdatum': 'date/date',
+    'enddatum': 'date/date',
+    'bild_vorher': 'file',
+    'zustand_vorher': 'string/textarea',
+    'bild_nachher': 'file',
+    'zustand_nachher': 'string/textarea',
+    'status': 'lookup/radio',
+  },
   'leihraeder': {
     'bild_fahrrad': 'file',
     'rahmennummer': 'string/text',
@@ -154,6 +192,11 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
 };
 
 export const HUB_TOPOLOGY: Record<string, { field: string; entity: string }[]> = {
+  'kunden': [
+    { field: 'kunde', entity: 'leihvorgaenge' },
+    { field: 'verliehen_an', entity: 'leihraeder' },
+    { field: 'kunde', entity: 'reparaturauftraege' },
+  ],
 };
 
 type StripLookup<T> = {
@@ -163,6 +206,7 @@ type StripLookup<T> = {
 };
 
 // Helper Types for creating new records (lookup fields as plain strings for API)
+export type CreateLeihvorgaenge = StripLookup<Leihvorgaenge['fields']>;
 export type CreateLeihraeder = StripLookup<Leihraeder['fields']>;
 export type CreateKunden = StripLookup<Kunden['fields']>;
 export type CreateReparaturauftraege = StripLookup<Reparaturauftraege['fields']>;

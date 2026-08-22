@@ -340,7 +340,7 @@ if (gridIdx >= 0) {
 // useEntityCrud() — legacy pages (preserved pre-EntityCrud overviews the
 // update flow keeps verbatim) are exempt by construction.
 {
-  const ENTITY_DIALOG_PASCALS = ["Leihraeder", "Kunden", "Reparaturauftraege", "Teilelager"];
+  const ENTITY_DIALOG_PASCALS = ["Leihvorgaenge", "Leihraeder", "Kunden", "Reparaturauftraege", "Teilelager"];
   if (usesEntityCrud) {
     if (!/import\s*\{[^}]*\buseEntityCrud\b[^}]*\}\s*from\s*'@\/components\/EntityCrud'/.test(code)) {
       errors.push("useEntityCrud() called but not imported from '@/components/EntityCrud' — keep the pre-generated import.");

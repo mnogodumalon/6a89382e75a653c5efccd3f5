@@ -1,4 +1,4 @@
-import type { Leihraeder, Kunden } from '@/types/app';
+import type { Leihraeder, Kunden, Leihvorgaenge } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { extractRecordId } from '@/services/livingAppsService';
 import {
@@ -6,6 +6,7 @@ import {
 } from '@/components/widgets/RecordView';
 import { t, appLabel, fieldLabel } from '@/i18n';
 import { MediaThumbnail } from '@/components/widgets/MediaViewer';
+import { SatelliteSection } from '@/components/SatelliteSection';
 
 export interface LeihraederDetailsProps {
   /** Der Record — enriched oder roh; alle Felder werden hier gerendert. */
@@ -14,12 +15,21 @@ export interface LeihraederDetailsProps {
   kundenList: Kunden[];
   /** Klick auf die Kunden-Relation → overlay.push auf dessen Detail. */
   onOpenKunden?: (record: Kunden) => void;
+  /** 1:N „Leihvorgänge" (leihrad): VOLLE Liste — der Block filtert auf diesen Record. */
+  leihvorgaengeList: Leihvorgaenge[];
+  /** Zeilen-Klick → overlay.push auf das Leihvorgaenge-Detail (nie der Edit-Dialog). */
+  onOpenLeihvorgaenge: (record: Leihvorgaenge) => void;
+  /** Kontextuelles „+": öffnet den Leihvorgaenge-Dialog mit diesem Record vorgesetzt. */
+  onAddLeihvorgaenge: () => void;
 }
 
 export function LeihraederDetails({
   record,
   kundenList,
   onOpenKunden,
+  leihvorgaengeList,
+  onOpenLeihvorgaenge,
+  onAddLeihvorgaenge,
 }: LeihraederDetailsProps) {
   const verliehen_anTarget = kundenList.find(r => r.record_id === extractRecordId(record.fields.verliehen_an));
   return (
@@ -44,6 +54,15 @@ export function LeihraederDetails({
           onClick={verliehen_anTarget && onOpenKunden ? () => onOpenKunden!(verliehen_anTarget!) : undefined}
         />
       </RecordSection>
+
+      <SatelliteSection
+        title={appLabel('leihvorgaenge')}
+        items={leihvorgaengeList.filter(r => extractRecordId(r.fields.leihrad) === record.record_id)}
+        map={r => ({ name: appLabel('leihvorgaenge'), meta: r.fields.startdatum })}
+        onOpen={onOpenLeihvorgaenge}
+        onAdd={onAddLeihvorgaenge}
+        getKey={r => r.record_id}
+      />
 
       <RecordAttachments appId={APP_IDS.LEIHRAEDER} recordId={record.record_id} />
     </>

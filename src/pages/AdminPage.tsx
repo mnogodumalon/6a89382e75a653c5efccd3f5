@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import type { Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
 import { LivingAppsService, extractRecordId, cleanFieldsForApi } from '@/services/livingAppsService';
+import { LeihvorgaengeDialog } from '@/components/dialogs/LeihvorgaengeDialog';
+import { LeihvorgaengeViewDialog } from '@/components/dialogs/LeihvorgaengeViewDialog';
 import { LeihraederDialog } from '@/components/dialogs/LeihraederDialog';
 import { LeihraederViewDialog } from '@/components/dialogs/LeihraederViewDialog';
 import { KundenDialog } from '@/components/dialogs/KundenDialog';
@@ -38,6 +40,17 @@ function fmtDate(d?: string) {
 // Field metadata per entity for bulk edit and column filters. `label` is the
 // BUILD-language fallback only — getFieldMeta() re-labels every entry (and every
 // lookup option) through the runtime catalog before anything renders it.
+const LEIHVORGAENGE_FIELDS = [
+  { key: 'leihrad', label: 'Leihrad', type: 'applookup/select', targetEntity: 'leihraeder', targetAppId: 'LEIHRAEDER', displayField: 'rahmennummer' },
+  { key: 'kunde', label: 'Kunde', type: 'applookup/select', targetEntity: 'kunden', targetAppId: 'KUNDEN', displayField: 'vorname' },
+  { key: 'startdatum', label: 'Ausleihdatum', type: 'date/date' },
+  { key: 'enddatum', label: 'Rückgabedatum', type: 'date/date' },
+  { key: 'bild_vorher', label: 'Bild vor Ausleihe', type: 'file' },
+  { key: 'zustand_vorher', label: 'Zustand vor Ausleihe', type: 'string/textarea' },
+  { key: 'bild_nachher', label: 'Bild nach Rückgabe', type: 'file' },
+  { key: 'zustand_nachher', label: 'Zustand nach Rückgabe', type: 'string/textarea' },
+  { key: 'status', label: 'Status', type: 'lookup/radio', options: [{ key: 'aktiv', label: 'Aktiv' }, { key: 'zurueckgegeben', label: 'Zurückgegeben' }, { key: 'ueberfaellig', label: 'Überfällig' }] },
+];
 const LEIHRAEDER_FIELDS = [
   { key: 'bild_fahrrad', label: 'Bild des Fahrrads', type: 'file' },
   { key: 'rahmennummer', label: 'Rahmennummer', type: 'string/text' },
@@ -67,6 +80,7 @@ const TEILELAGER_FIELDS = [
 ];
 
 const ENTITY_TABS = [
+  { key: 'leihvorgaenge', pascal: 'Leihvorgaenge' },
   { key: 'leihraeder', pascal: 'Leihraeder' },
   { key: 'kunden', pascal: 'Kunden' },
   { key: 'reparaturauftraege', pascal: 'Reparaturauftraege' },
@@ -79,14 +93,16 @@ export default function AdminPage() {
   const data = useDashboardData();
   const { loading, error, fetchAll } = data;
 
-  const [activeTab, setActiveTab] = useState<EntityKey>('leihraeder');
+  const [activeTab, setActiveTab] = useState<EntityKey>('leihvorgaenge');
   const [selectedIds, setSelectedIds] = useState<Record<EntityKey, Set<string>>>(() => ({
+    'leihvorgaenge': new Set(),
     'leihraeder': new Set(),
     'kunden': new Set(),
     'reparaturauftraege': new Set(),
     'teilelager': new Set(),
   }));
   const [filters, setFilters] = useState<Record<EntityKey, Record<string, string>>>(() => ({
+    'leihvorgaenge': {},
     'leihraeder': {},
     'kunden': {},
     'reparaturauftraege': {},
@@ -105,6 +121,7 @@ export default function AdminPage() {
 
   const getRecords = useCallback((entity: EntityKey) => {
     switch (entity) {
+      case 'leihvorgaenge': return (data as any).leihvorgaenge as Leihvorgaenge[] ?? [];
       case 'leihraeder': return (data as any).leihraeder as Leihraeder[] ?? [];
       case 'kunden': return (data as any).kunden as Kunden[] ?? [];
       case 'reparaturauftraege': return (data as any).reparaturauftraege as Reparaturauftraege[] ?? [];
@@ -116,6 +133,10 @@ export default function AdminPage() {
   const getLookupLists = useCallback((entity: EntityKey) => {
     const lists: Record<string, any[]> = {};
     switch (entity) {
+      case 'leihvorgaenge':
+        lists.leihraederList = (data as any).leihraeder ?? [];
+        lists.kundenList = (data as any).kunden ?? [];
+        break;
       case 'leihraeder':
         lists.kundenList = (data as any).kunden ?? [];
         break;
@@ -132,6 +153,14 @@ export default function AdminPage() {
     if (!id) return '—';
     const lists = getLookupLists(entity);
     void fieldKey; // ensure used for noUnusedParameters
+    if (entity === 'leihvorgaenge' && fieldKey === 'leihrad') {
+      const match = (lists.leihraederList ?? []).find((r: any) => r.record_id === id);
+      return match?.fields.rahmennummer ?? '—';
+    }
+    if (entity === 'leihvorgaenge' && fieldKey === 'kunde') {
+      const match = (lists.kundenList ?? []).find((r: any) => r.record_id === id);
+      return match?.fields.vorname ?? '—';
+    }
     if (entity === 'leihraeder' && fieldKey === 'verliehen_an') {
       const match = (lists.kundenList ?? []).find((r: any) => r.record_id === id);
       return match?.fields.vorname ?? '—';
@@ -149,6 +178,7 @@ export default function AdminPage() {
   const getFieldMeta = useCallback((entity: EntityKey) => {
     const raw: any[] = (() => {
       switch (entity) {
+        case 'leihvorgaenge': return LEIHVORGAENGE_FIELDS as any[];
         case 'leihraeder': return LEIHRAEDER_FIELDS as any[];
         case 'kunden': return KUNDEN_FIELDS as any[];
         case 'reparaturauftraege': return REPARATURAUFTRAEGE_FIELDS as any[];
@@ -258,6 +288,11 @@ export default function AdminPage() {
 
   const getServiceMethods = useCallback((entity: EntityKey) => {
     switch (entity) {
+      case 'leihvorgaenge': return {
+        create: (fields: any) => LivingAppsService.createLeihvorgaengeEntry(fields),
+        update: (id: string, fields: any) => LivingAppsService.updateLeihvorgaengeEntry(id, fields),
+        remove: (id: string) => LivingAppsService.deleteLeihvorgaengeEntry(id),
+      };
       case 'leihraeder': return {
         create: (fields: any) => LivingAppsService.createLeihraederEntry(fields),
         update: (id: string, fields: any) => LivingAppsService.updateLeihraederEntry(id, fields),
@@ -618,6 +653,18 @@ export default function AdminPage() {
         </Table>
       </div>
 
+      {(createEntity === 'leihvorgaenge' || dialogState?.entity === 'leihvorgaenge') && (
+        <LeihvorgaengeDialog
+          open={createEntity === 'leihvorgaenge' || dialogState?.entity === 'leihvorgaenge'}
+          onClose={() => { setCreateEntity(null); setDialogState(null); }}
+          onSubmit={dialogState?.entity === 'leihvorgaenge' ? handleUpdate : (fields: any) => handleCreate('leihvorgaenge', fields)}
+          defaultValues={dialogState?.entity === 'leihvorgaenge' ? dialogState.record?.fields : undefined}
+          leihraederList={(data as any).leihraeder ?? []}
+          kundenList={(data as any).kunden ?? []}
+          enablePhotoScan={AI_PHOTO_SCAN['Leihvorgaenge']}
+          enablePhotoLocation={AI_PHOTO_LOCATION['Leihvorgaenge']}
+        />
+      )}
       {(createEntity === 'leihraeder' || dialogState?.entity === 'leihraeder') && (
         <LeihraederDialog
           open={createEntity === 'leihraeder' || dialogState?.entity === 'leihraeder'}
@@ -658,6 +705,16 @@ export default function AdminPage() {
           defaultValues={dialogState?.entity === 'teilelager' ? dialogState.record?.fields : undefined}
           enablePhotoScan={AI_PHOTO_SCAN['Teilelager']}
           enablePhotoLocation={AI_PHOTO_LOCATION['Teilelager']}
+        />
+      )}
+      {viewState?.entity === 'leihvorgaenge' && (
+        <LeihvorgaengeViewDialog
+          open={viewState?.entity === 'leihvorgaenge'}
+          onClose={() => setViewState(null)}
+          record={viewState?.record}
+          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'leihvorgaenge', record: r }); }}
+          leihraederList={(data as any).leihraeder ?? []}
+          kundenList={(data as any).kunden ?? []}
         />
       )}
       {viewState?.entity === 'leihraeder' && (

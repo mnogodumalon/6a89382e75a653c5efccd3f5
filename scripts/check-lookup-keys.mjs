@@ -22,9 +22,12 @@ const VALID_KEYS = {
   ],
   "status": [
     "abgeholt",
+    "aktiv",
     "angenommen",
     "fertig",
-    "in_arbeit"
+    "in_arbeit",
+    "ueberfaellig",
+    "zurueckgegeben"
   ]
 };
 

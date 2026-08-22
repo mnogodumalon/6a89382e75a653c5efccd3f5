@@ -10,6 +10,8 @@ import { Layout } from '@/components/Layout';
 import DashboardOverview from '@/pages/DashboardOverview';
 import AdminPage from '@/pages/AdminPage';
 import PublicPagesAdmin from '@/pages/PublicPagesAdmin';
+import LeihvorgaengePage from '@/pages/LeihvorgaengePage';
+import LeihvorgaengeDetailPage from '@/pages/LeihvorgaengeDetailPage';
 import LeihraederPage from '@/pages/LeihraederPage';
 import LeihraederDetailPage from '@/pages/LeihraederDetailPage';
 import KundenPage from '@/pages/KundenPage';
@@ -60,6 +62,8 @@ export default function App() {
               <Route path="public/:slug" element={<Suspense fallback={null}><PublicPage /></Suspense>} />
               <Route element={<Layout />}>
                 <Route index element={<DashboardOverview />} />
+                <Route path="leihvorgaenge" element={<LeihvorgaengePage />} />
+                <Route path="leihvorgaenge/:id" element={<LeihvorgaengeDetailPage />} />
                 <Route path="leihraeder" element={<LeihraederPage />} />
                 <Route path="leihraeder/:id" element={<LeihraederDetailPage />} />
                 <Route path="kunden" element={<KundenPage />} />

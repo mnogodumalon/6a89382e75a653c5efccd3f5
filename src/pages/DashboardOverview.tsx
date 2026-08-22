@@ -35,6 +35,7 @@ export default function DashboardOverview() {
     reparaturauftraege, setReparaturauftraege,
     teilelager,
     leihraeder,
+    leihvorgaenge,
     loading, error, fetchAll,
   } = data;
 
@@ -137,6 +138,10 @@ export default function DashboardOverview() {
   // Leihräder
   const leihraederVerliehen = leihraeder.filter(l => !!l.fields.verliehen_an);
   const leihraederVerfuegbar = leihraeder.filter(l => !l.fields.verliehen_an);
+
+  // Leihvorgänge
+  const leihvorgaengeAktiv = leihvorgaenge.filter(l => lookupKey(l.fields.status) === 'aktiv');
+  const leihvorgaengeUeberfaellig = leihvorgaenge.filter(l => lookupKey(l.fields.status) === 'ueberfaellig');
 
   // KanbanColumns inside body (locale-aware getter)
   const COLUMNS = (LOOKUP_OPTIONS['reparaturauftraege']?.['status'] ?? []).map(o => ({ key: o.key, label: o.label })) as KanbanColumn[];
@@ -264,6 +269,18 @@ export default function DashboardOverview() {
               icon={<IconBike size={16} />}
               tone={leihraederVerfuegbar.length > 0 ? 'success' : 'default'}
             />
+            <StatStripItem
+              title={tx('Leihvorgänge aktiv')}
+              value={leihvorgaengeAktiv.length}
+              icon={<IconCalendar size={16} />}
+              tone={leihvorgaengeAktiv.length > 0 ? 'primary' : 'default'}
+            />
+            <StatStripItem
+              title={tx('Leihvorgänge überfällig')}
+              value={leihvorgaengeUeberfaellig.length}
+              icon={<IconAlertTriangle size={16} />}
+              tone={leihvorgaengeUeberfaellig.length > 0 ? 'destructive' : 'default'}
+            />
           </StatStrip>
         }
         primary={
@@ -384,6 +401,37 @@ export default function DashboardOverview() {
               empty={{
                 text: tx('Alle Leihräder verfügbar.'),
                 action: { label: tx('Leihrad anlegen'), onClick: () => crud.leihraeder.openCreate({}) },
+              }}
+            />
+            <WorkList
+              title={tx('Leihvorgänge — Aktiv & Überfällig')}
+              items={[...leihvorgaengeUeberfaellig, ...leihvorgaengeAktiv].map(l => ({
+                id: l.record_id,
+                title: l.fields.enddatum
+                  ? tx`bis ${formatDate(l.fields.enddatum)}`
+                  : tx('Leihvorgang'),
+                secondLine: (
+                  <>
+                    <span className={`font-medium ${lookupKey(l.fields.status) === 'ueberfaellig' ? 'text-destructive' : 'text-amber-600'}`}>
+                      {lookupKey(l.fields.status) === 'ueberfaellig' ? tx('Überfällig') : tx('Aktiv')}
+                    </span>
+                    {l.fields.startdatum && (
+                      <span className="text-muted-foreground"> · {tx`ab ${formatDate(l.fields.startdatum)}`}</span>
+                    )}
+                  </>
+                ),
+                action: {
+                  label: tx('Ansehen'),
+                  onClick: () => crud.leihvorgaenge.openDetail(l),
+                },
+              }))}
+              onItemClick={(id) => {
+                const l = leihvorgaenge.find(x => x.record_id === id);
+                if (l) crud.leihvorgaenge.openDetail(l);
+              }}
+              empty={{
+                text: tx('Keine aktiven Leihvorgänge.'),
+                action: { label: tx('Leihvorgang anlegen'), onClick: () => crud.leihvorgaenge.openCreate({}) },
               }}
             />
           </>

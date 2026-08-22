@@ -10,10 +10,10 @@ a missing map is a guaranteed type error.
 
 Modules — copy these paths verbatim into a subagent brief:
   @/types/app                            entity types, APP_IDS, LOOKUP_OPTIONS
-  @/types/enriched                       EnrichedLeihraeder, EnrichedReparaturauftraege — the COMPLETE list, no other Enriched* type exists
+  @/types/enriched                       EnrichedLeihvorgaenge, EnrichedLeihraeder, EnrichedReparaturauftraege — the COMPLETE list, no other Enriched* type exists
   @/lib/enrich                           the enrich functions — exact fields and signatures on the `✚` line of each entity below; every listed map is REQUIRED, and no other enriched field exists
   @/services/livingAppsService           LivingAppsService, createRecordUrl, extractRecordId
-  @/hooks/useDashboardData               useDashboardData — the RAW arrays (one per entity, camelCase), their setters, loading, error, fetchAll + kundenMap; it carries NO enriched arrays — build those with the `✚` call below
+  @/hooks/useDashboardData               useDashboardData — the RAW arrays (one per entity, camelCase), their setters, loading, error, fetchAll + kundenMap, leihraederMap; it carries NO enriched arrays — build those with the `✚` call below
   @/lib/formatters                       lookupKey, formatDate
   @/components/blocks/IntentWizardShell  IntentWizardShell
   @/components/blocks/EntitySelectStep   EntitySelectStep
@@ -24,6 +24,11 @@ There is NO `@/config/appIds`, no `@/config/lookupOptions` and no
 `@/lib/urlUtils` — APP_IDS and LOOKUP_OPTIONS come from `@/types/app`,
 createRecordUrl from the service. Note the lowercase `l` in the service path.
 
+- Leihvorgänge (leihvorgaenge): leihrad![applookup/select], kunde![applookup/select], startdatum![date/date], enddatum[date/date], bild_vorher[file], zustand_vorher[string/textarea], bild_nachher[file], zustand_nachher[string/textarea], status![lookup/radio: aktiv|zurueckgegeben|ueberfaellig]
+  ⚙ getLeihvorgaenge() · getLeihvorgaengeEntry(id) · createLeihvorgaengeEntry(fields) · updateLeihvorgaengeEntry(id, fields) · deleteLeihvorgaengeEntry(id)
+  ✚ EnrichedLeihvorgaenge adds ONLY leihradName, kundeName — via enrichLeihvorgaenge(leihvorgaenge, { leihraederMap, kundenMap }), all maps required
+  → leihrad links to app_id 6a893fdc641de8c47248bb48
+  → kunde links to app_id 6a89381649b1e4adfb583623
 - Leihräder (leihraeder): bild_fahrrad[file], rahmennummer![string/text], groesse[lookup/select: s|m|l], tagespreis[number], verliehen_an[applookup/select]
   ⚙ getLeihraeder() · getLeihraederEntry(id) · createLeihraederEntry(fields) · updateLeihraederEntry(id, fields) · deleteLeihraederEntry(id)
   ✚ EnrichedLeihraeder adds ONLY verliehen_anName — via enrichLeihraeder(leihraeder, { kundenMap }), all maps required
