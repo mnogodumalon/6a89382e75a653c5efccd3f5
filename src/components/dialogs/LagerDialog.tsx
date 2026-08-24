@@ -1,19 +1,19 @@
 /**
- * TeilelagerDialog — pre-generated create/edit dialog for Teilelager.
+ * LagerDialog — pre-generated create/edit dialog for Lager.
  *
  * Props: open, onClose, onSubmit(fields) => Promise<void>, defaultValues?,
  * recordId? (pass when EDITING — enables the attachments section),
  * enablePhotoScan?, enablePhotoLocation?.
  *
  * defaultValues is SHAPE-TOLERANT and its prop type is the EXPORTED
- * TeilelagerDialogDefaults — NOT the entity field type: lookup fields accept
+ * LagerDialogDefaults — NOT the entity field type: lookup fields accept
  * the bare KEY string (or LookupValue), applookup fields the bare record id
  * (or record URL); the dialog normalizes. Type prefill STATE with the export:
- *  ❌ useState<Partial<Teilelager['fields']>>({ … })   // LookupValue fields reject string prefills (TS2322)
- *  ✓ useState<TeilelagerDialogDefaults | undefined>(undefined)
+ *  ❌ useState<Partial<Lager['fields']>>({ … })   // LookupValue fields reject string prefills (TS2322)
+ *  ✓ useState<LagerDialogDefaults | undefined>(undefined)
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import type { Teilelager } from '@/types/app';
+import type { Lager } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { extractRecordId, createRecordUrl, cleanFieldsForApi, getUserProfile } from '@/services/livingAppsService';
 import {
@@ -25,7 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { ComputedContext } from '@/config/form-enhancements/types';
 import { applyFieldOrder, flattenFieldOrder, applyDefaults, evalComputed, numberInputProps, clampNumberValue, classifyComputed, extractApplookupRefs, mergeApplookupRefs, resolveApplookupRef } from '@/config/form-enhancements/types';
-import { formEnhancements, computedDeps, computedApplookupRefs } from '@/config/form-enhancements/Teilelager';
+import { formEnhancements, computedDeps, computedApplookupRefs } from '@/config/form-enhancements/Lager';
 import { AttachmentsSection } from '@/components/AttachmentsSection';
 import { t, appLabel, fieldLabel, lookupLabel, localeTag, CURRENCY } from '@/i18n';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,25 +33,25 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { IconAlertCircle, IconCamera, IconChevronDown, IconCircleCheck, IconClipboard, IconFileText, IconLoader2, IconPhotoPlus, IconSparkles, IconUpload, IconX } from '@tabler/icons-react';
 import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode } from '@/lib/ai';
 
-/** Widened prefill type for TeilelagerDialog.defaultValues — see file header. */
-export type TeilelagerDialogDefaults = Teilelager['fields'];
+/** Widened prefill type for LagerDialog.defaultValues — see file header. */
+export type LagerDialogDefaults = Lager['fields'];
 
-interface TeilelagerDialogProps {
+interface LagerDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (fields: Teilelager['fields']) => Promise<void>;
+  onSubmit: (fields: Lager['fields']) => Promise<void>;
   /** SHAPE-TOLERANT: lookup fields accept the bare key (string) or the
    *  LookupValue object; applookup fields the bare record id or the full
    *  record URL — the dialog normalizes both. */
-  defaultValues?: TeilelagerDialogDefaults;
+  defaultValues?: LagerDialogDefaults;
   /** Record id when editing — enables the attachments section. Omit on create. */
   recordId?: string;
   enablePhotoScan?: boolean;
   enablePhotoLocation?: boolean;
 }
 
-export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recordId, enablePhotoScan = true, enablePhotoLocation = true }: TeilelagerDialogProps) {
-  const [fields, setFields] = useState<Partial<Teilelager['fields']>>({});
+export function LagerDialog({ open, onClose, onSubmit, defaultValues, recordId, enablePhotoScan = true, enablePhotoLocation = true }: LagerDialogProps) {
+  const [fields, setFields] = useState<Partial<Lager['fields']>>({});
   const [saving, setSaving] = useState(false);
   const normalizedDefaults = defaultValues as Record<string, unknown> | undefined;
   // Dirty-tracking: in edit-mode the Speichern button is disabled until the
@@ -120,7 +120,7 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
 
   useEffect(() => {
     if (open) {
-      setFields(applyDefaults(normalizedDefaults ?? {}, formEnhancements.defaults) as Partial<Teilelager['fields']>);
+      setFields(applyDefaults(normalizedDefaults ?? {}, formEnhancements.defaults) as Partial<Lager['fields']>);
       setPreview(null);
       setScanSuccess(false);
       setAiText('');
@@ -173,8 +173,8 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
           (merged as Record<string, unknown>)[key] = val;
         }
       }
-      const clean = cleanFieldsForApi(merged, 'teilelager');
-      await onSubmit(clean as Teilelager['fields']);
+      const clean = cleanFieldsForApi(merged, 'lager');
+      await onSubmit(clean as Lager['fields']);
       onClose();
     } catch (err) {
       setSubmitError(err instanceof Error && err.message ? err.message : t('submit_error'));
@@ -235,7 +235,7 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
         for (const [k, v] of Object.entries(raw)) {
           if (v != null) merged[k] = v;
         }
-        return merged as Partial<Teilelager['fields']>;
+        return merged as Partial<Lager['fields']>;
       });
       setAiText('');
       setScanSuccess(true);
@@ -277,13 +277,13 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
   }, []);
 
   const DIALOG_INTENT = defaultValues
-    ? t('edit_entity', { entity: appLabel('teilelager') })
-    : t('new_entity', { entity: appLabel('teilelager') });
+    ? t('edit_entity', { entity: appLabel('lager') })
+    : t('new_entity', { entity: appLabel('lager') });
 
   const fieldBlocks: Record<string, React.ReactNode> = {
     'bezeichnung': (
       <div key="bezeichnung" className="space-y-1.5">
-        <Label htmlFor="bezeichnung">{fieldLabel('teilelager', 'bezeichnung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
+        <Label htmlFor="bezeichnung">{fieldLabel('lager', 'bezeichnung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="bezeichnung"
           placeholder=""
@@ -298,7 +298,7 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
     ),
     'lagerbestand': (
       <div key="lagerbestand" className="space-y-1.5">
-        <Label htmlFor="lagerbestand">{fieldLabel('teilelager', 'lagerbestand')} <span className="text-destructive" aria-hidden="true">*</span></Label>
+        <Label htmlFor="lagerbestand">{fieldLabel('lager', 'lagerbestand')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="lagerbestand"
           type="number"
@@ -315,7 +315,7 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
     ),
     'preis': (
       <div key="preis" className="space-y-1.5">
-        <Label htmlFor="preis">{fieldLabel('teilelager', 'preis')} <span className="text-destructive" aria-hidden="true">*</span></Label>
+        <Label htmlFor="preis">{fieldLabel('lager', 'preis')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="preis"
           type="number"
@@ -332,7 +332,7 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
     ),
     'mindestbestand': (
       <div key="mindestbestand" className="space-y-1.5">
-        <Label htmlFor="mindestbestand">{fieldLabel('teilelager', 'mindestbestand')}</Label>
+        <Label htmlFor="mindestbestand">{fieldLabel('lager', 'mindestbestand')}</Label>
         <Input
           id="mindestbestand"
           type="number"
@@ -706,7 +706,7 @@ export function TeilelagerDialog({ open, onClose, onSubmit, defaultValues, recor
             )}
             {recordId && (
               <div className="pt-2 border-t border-border">
-                <AttachmentsSection appId={APP_IDS.TEILELAGER} recordId={recordId} />
+                <AttachmentsSection appId={APP_IDS.LAGER} recordId={recordId} />
               </div>
             )}
           </div>

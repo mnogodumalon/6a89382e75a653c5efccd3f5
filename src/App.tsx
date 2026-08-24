@@ -18,8 +18,8 @@ import KundenPage from '@/pages/KundenPage';
 import KundenDetailPage from '@/pages/KundenDetailPage';
 import ReparaturauftraegePage from '@/pages/ReparaturauftraegePage';
 import ReparaturauftraegeDetailPage from '@/pages/ReparaturauftraegeDetailPage';
-import TeilelagerPage from '@/pages/TeilelagerPage';
-import TeilelagerDetailPage from '@/pages/TeilelagerDetailPage';
+import LagerPage from '@/pages/LagerPage';
+import LagerDetailPage from '@/pages/LagerDetailPage';
 // <custom:imports>
 const IntentAuftragAnlegenPage = lazy(() => import('@/pages/intents/AuftragAnlegenPage'));
 const IntentAuftragAbschliessenPage = lazy(() => import('@/pages/intents/AuftragAbschliessenPage'));
@@ -70,8 +70,8 @@ export default function App() {
                 <Route path="kunden/:id" element={<KundenDetailPage />} />
                 <Route path="reparaturauftraege" element={<ReparaturauftraegePage />} />
                 <Route path="reparaturauftraege/:id" element={<ReparaturauftraegeDetailPage />} />
-                <Route path="teilelager" element={<TeilelagerPage />} />
-                <Route path="teilelager/:id" element={<TeilelagerDetailPage />} />
+                <Route path="lager" element={<LagerPage />} />
+                <Route path="lager/:id" element={<LagerDetailPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="verwaltung/oeffentliche-seiten" element={<PublicPagesAdmin />} />
                 {/* <custom:routes> */}

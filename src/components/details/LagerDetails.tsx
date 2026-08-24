@@ -6,21 +6,21 @@ import {
 } from '@/components/widgets/RecordView';
 import { t, appLabel, fieldLabel } from '@/i18n';
 
-export interface ErsatzteileDetailsProps {
+export interface LagerDetailsProps {
   /** Der Record — enriched oder roh; alle Felder werden hier gerendert. */
   record: Lager;
 }
 
-export function ErsatzteileDetails({
+export function LagerDetails({
   record,
-}: ErsatzteileDetailsProps) {
+}: LagerDetailsProps) {
   return (
     <>
       <RecordSection title={t('details')} cols={2}>
-        <RecordField label={fieldLabel('ersatzteile', 'bezeichnung')} value={record.fields.bezeichnung} format="text" />
-        <RecordField label={fieldLabel('ersatzteile', 'lagerbestand')} value={record.fields.lagerbestand} format="text" />
-        <RecordField label={fieldLabel('ersatzteile', 'preis')} value={record.fields.preis} format="text" />
-        <RecordField label={fieldLabel('ersatzteile', 'mindestbestand')} value={record.fields.mindestbestand} format="text" />
+        <RecordField label={fieldLabel('lager', 'bezeichnung')} value={record.fields.bezeichnung} format="text" />
+        <RecordField label={fieldLabel('lager', 'lagerbestand')} value={record.fields.lagerbestand} format="text" />
+        <RecordField label={fieldLabel('lager', 'preis')} value={record.fields.preis} format="text" />
+        <RecordField label={fieldLabel('lager', 'mindestbestand')} value={record.fields.mindestbestand} format="text" />
       </RecordSection>
 
       <RecordAttachments appId={APP_IDS.LAGER} recordId={record.record_id} />

@@ -15,7 +15,7 @@ index.css is pre-generated with the shared design system. Do NOT edit it.
 src/config/ai-features.ts is editable — set AI_PHOTO_SCAN['Entity'] = true to enable photo scan in dialogs.
 NEVER use Bash cat/echo/heredoc for file operations — always use Read/Write/Edit tools.
 
-Generated 120 scaffold files:
+Generated 121 scaffold files:
   - src/App.tsx
   - src/i18n/index.ts
   - src/i18n/common.ts
@@ -52,6 +52,7 @@ Generated 120 scaffold files:
   - src/components/DatePicker.tsx
   - .placeholder-tasks.json
   - src/config/form-enhancements/types.ts
+  - src/config/form-enhancements/Lager.ts
   - scripts/parse-formulas.mjs
   - scripts/apply-placeholders.mjs
   - src/config/intents.ts
@@ -127,11 +128,11 @@ Generated 120 scaffold files:
   - src/components/dialogs/ReparaturauftraegeViewDialog.tsx
   - src/pages/ReparaturauftraegeDetailPage.tsx
   - src/components/details/ReparaturauftraegeDetails.tsx
-  - src/pages/TeilelagerPage.tsx
-  - src/components/dialogs/TeilelagerDialog.tsx
-  - src/components/dialogs/TeilelagerViewDialog.tsx
-  - src/pages/TeilelagerDetailPage.tsx
-  - src/components/details/TeilelagerDetails.tsx
+  - src/pages/LagerPage.tsx
+  - src/components/dialogs/LagerDialog.tsx
+  - src/components/dialogs/LagerViewDialog.tsx
+  - src/pages/LagerDetailPage.tsx
+  - src/components/details/LagerDetails.tsx
   - src/components/EntityCrud.tsx
   - src/types/leaflet-plugins.d.ts
   - src/pages/AdminPage.tsx
@@ -173,7 +174,7 @@ These are ALL the keys; the names are shown for orientation only:
   appLabel('leihraeder')          →  Leihräder
   appLabel('kunden')              →  Kunden
   appLabel('reparaturauftraege')  →  Reparaturaufträge
-  appLabel('teilelager')          →  Teilelager
+  appLabel('lager')               →  Lager
 
 WRONG: `title="Leihvorgänge"` — and equally wrong: a local helper that returns
        that literal behind an `i18n-exempt` marker. Gate 21 and the mechanical
@@ -282,7 +283,7 @@ contracts; Read one only if the contract below is insufficient.
  *   leihraeder: bild_fahrrad, rahmennummer, groesse, tagespreis, verliehen_an  ·  → kunden · ← leihvorgaenge (list + contextual +)
  *   kunden: vorname, nachname, telefonnummer, email, stammkunde  ·  ← leihvorgaenge (list + contextual +) · ← leihraeder (list + contextual +) · ← reparaturauftraege (list + contextual +)
  *   reparaturauftraege: kunde, fahrrad_beschreibung, problembeschreibung, abgabedatum, status  ·  → kunden
- *   teilelager: bezeichnung, lagerbestand, preis, mindestbestand
+ *   lager: bezeichnung, lagerbestand, preis, mindestbestand
  */
 ```
 

@@ -1,6 +1,18 @@
 {
   "version": 1,
-  "changes": [],
-  "counts": {},
-  "harmless_only": true
+  "changes": [
+    {
+      "kind": "label_changed",
+      "scope": "entity",
+      "entity": "lager",
+      "old_name": "Teilelager",
+      "new_name": "Lager",
+      "old_identifier": "teilelager",
+      "new_identifier": "lager"
+    }
+  ],
+  "counts": {
+    "label_changed": 1
+  },
+  "harmless_only": false
 }

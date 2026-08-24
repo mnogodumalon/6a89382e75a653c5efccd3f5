@@ -1,4 +1,4 @@
-// Auto-generated. Per-entity form-enhancements config for "Teilelager".
+// Auto-generated. Per-entity form-enhancements config for "Lager".
 // The sandbox sub-agent (Step 0) may overwrite this file with a richer config.
 // Schema: see ./types.ts.
 

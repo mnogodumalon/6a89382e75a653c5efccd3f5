@@ -201,9 +201,9 @@
           "in_fulltext_search": true,
           "in_expert_search": true,
           "lookup_data": {
-            "s": "S",
             "m": "M",
-            "l": "L"
+            "l": "L",
+            "s": "S"
           }
         },
         "tagespreis": {
@@ -411,9 +411,9 @@
         }
       }
     },
-    "teilelager": {
+    "lager": {
       "app_id": "6a8938194cf2973db816a8b8",
-      "name": "Teilelager",
+      "name": "Lager",
       "main": false,
       "controls": {
         "bezeichnung": {
@@ -488,7 +488,7 @@
       "Leihräder",
       "Kunden",
       "Reparaturaufträge",
-      "Teilelager"
+      "Lager"
     ]
   }
 }

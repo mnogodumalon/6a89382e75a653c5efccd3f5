@@ -33,7 +33,7 @@ export default function DashboardOverview() {
   const data = useDashboardData();
   const {
     reparaturauftraege, setReparaturauftraege,
-    teilelager,
+    lager,
     leihraeder,
     leihvorgaenge,
     loading, error, fetchAll,
@@ -133,7 +133,7 @@ export default function DashboardOverview() {
   }).sort((a, b) => (a.fields.abgabedatum ?? '').localeCompare(b.fields.abgabedatum ?? ''));
 
   // Ersatzteile mit niedrigem Lagerbestand (≤5 Stück)
-  const tiefstand = teilelager.filter(e => (e.fields.lagerbestand ?? 0) <= 5).sort((a, b) => (a.fields.lagerbestand ?? 0) - (b.fields.lagerbestand ?? 0));
+  const tiefstand = lager.filter(e => (e.fields.lagerbestand ?? 0) <= 5).sort((a, b) => (a.fields.lagerbestand ?? 0) - (b.fields.lagerbestand ?? 0));
 
   // Leihräder
   const leihraederVerliehen = leihraeder.filter(l => !!l.fields.verliehen_an);
@@ -364,16 +364,16 @@ export default function DashboardOverview() {
                 ),
                 action: {
                   label: tx('Bestand'),
-                  onClick: () => crud.teilelager.openEdit(e),
+                  onClick: () => crud.lager.openEdit(e),
                 },
               }))}
               onItemClick={(id) => {
-                const e = teilelager.find(x => x.record_id === id);
-                if (e) crud.teilelager.openDetail(e);
+                const e = lager.find(x => x.record_id === id);
+                if (e) crud.lager.openDetail(e);
               }}
               empty={{
                 text: tx('Alle Ersatzteile gut vorrätig.'),
-                action: { label: tx('Ersatzteil anlegen'), onClick: () => crud.teilelager.openCreate({}) },
+                action: { label: tx('Ersatzteil anlegen'), onClick: () => crud.lager.openCreate({}) },
               }}
             />
             <WorkList

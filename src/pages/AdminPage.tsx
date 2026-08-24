@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useDashboardData } from '@/hooks/useDashboardData';
-import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Lager } from '@/types/app';
 import { LivingAppsService, extractRecordId, cleanFieldsForApi } from '@/services/livingAppsService';
 import { LeihvorgaengeDialog } from '@/components/dialogs/LeihvorgaengeDialog';
 import { LeihvorgaengeViewDialog } from '@/components/dialogs/LeihvorgaengeViewDialog';
@@ -10,8 +10,8 @@ import { KundenDialog } from '@/components/dialogs/KundenDialog';
 import { KundenViewDialog } from '@/components/dialogs/KundenViewDialog';
 import { ReparaturauftraegeDialog } from '@/components/dialogs/ReparaturauftraegeDialog';
 import { ReparaturauftraegeViewDialog } from '@/components/dialogs/ReparaturauftraegeViewDialog';
-import { TeilelagerDialog } from '@/components/dialogs/TeilelagerDialog';
-import { TeilelagerViewDialog } from '@/components/dialogs/TeilelagerViewDialog';
+import { LagerDialog } from '@/components/dialogs/LagerDialog';
+import { LagerViewDialog } from '@/components/dialogs/LagerViewDialog';
 import { BulkEditDialog } from '@/components/dialogs/BulkEditDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PageShell } from '@/components/PageShell';
@@ -54,7 +54,7 @@ const LEIHVORGAENGE_FIELDS = [
 const LEIHRAEDER_FIELDS = [
   { key: 'bild_fahrrad', label: 'Bild des Fahrrads', type: 'file' },
   { key: 'rahmennummer', label: 'Rahmennummer', type: 'string/text' },
-  { key: 'groesse', label: 'Größe', type: 'lookup/select', options: [{ key: 's', label: 'S' }, { key: 'm', label: 'M' }, { key: 'l', label: 'L' }] },
+  { key: 'groesse', label: 'Größe', type: 'lookup/select', options: [{ key: 'm', label: 'M' }, { key: 'l', label: 'L' }, { key: 's', label: 'S' }] },
   { key: 'tagespreis', label: 'Tagespreis (€)', type: 'number' },
   { key: 'verliehen_an', label: 'Verliehen an', type: 'applookup/select', targetEntity: 'kunden', targetAppId: 'KUNDEN', displayField: 'vorname' },
 ];
@@ -72,7 +72,7 @@ const REPARATURAUFTRAEGE_FIELDS = [
   { key: 'abgabedatum', label: 'Abgabedatum', type: 'date/date' },
   { key: 'status', label: 'Status', type: 'lookup/radio', options: [{ key: 'angenommen', label: 'Angenommen' }, { key: 'in_arbeit', label: 'In Arbeit' }, { key: 'fertig', label: 'Fertig' }, { key: 'abgeholt', label: 'Abgeholt' }] },
 ];
-const TEILELAGER_FIELDS = [
+const LAGER_FIELDS = [
   { key: 'bezeichnung', label: 'Bezeichnung', type: 'string/text' },
   { key: 'lagerbestand', label: 'Lagerbestand', type: 'number' },
   { key: 'preis', label: 'Preis (€)', type: 'number' },
@@ -84,7 +84,7 @@ const ENTITY_TABS = [
   { key: 'leihraeder', pascal: 'Leihraeder' },
   { key: 'kunden', pascal: 'Kunden' },
   { key: 'reparaturauftraege', pascal: 'Reparaturauftraege' },
-  { key: 'teilelager', pascal: 'Teilelager' },
+  { key: 'lager', pascal: 'Lager' },
 ] as const;
 
 type EntityKey = typeof ENTITY_TABS[number]['key'];
@@ -99,14 +99,14 @@ export default function AdminPage() {
     'leihraeder': new Set(),
     'kunden': new Set(),
     'reparaturauftraege': new Set(),
-    'teilelager': new Set(),
+    'lager': new Set(),
   }));
   const [filters, setFilters] = useState<Record<EntityKey, Record<string, string>>>(() => ({
     'leihvorgaenge': {},
     'leihraeder': {},
     'kunden': {},
     'reparaturauftraege': {},
-    'teilelager': {},
+    'lager': {},
   }));
   const [showFilters, setShowFilters] = useState(false);
   const [dialogState, setDialogState] = useState<{ entity: EntityKey; record: any } | null>(null);
@@ -125,7 +125,7 @@ export default function AdminPage() {
       case 'leihraeder': return (data as any).leihraeder as Leihraeder[] ?? [];
       case 'kunden': return (data as any).kunden as Kunden[] ?? [];
       case 'reparaturauftraege': return (data as any).reparaturauftraege as Reparaturauftraege[] ?? [];
-      case 'teilelager': return (data as any).teilelager as Teilelager[] ?? [];
+      case 'lager': return (data as any).lager as Lager[] ?? [];
       default: return [];
     }
   }, [data]);
@@ -182,7 +182,7 @@ export default function AdminPage() {
         case 'leihraeder': return LEIHRAEDER_FIELDS as any[];
         case 'kunden': return KUNDEN_FIELDS as any[];
         case 'reparaturauftraege': return REPARATURAUFTRAEGE_FIELDS as any[];
-        case 'teilelager': return TEILELAGER_FIELDS as any[];
+        case 'lager': return LAGER_FIELDS as any[];
         default: return [];
       }
     })();
@@ -308,10 +308,10 @@ export default function AdminPage() {
         update: (id: string, fields: any) => LivingAppsService.updateReparaturauftraegeEntry(id, fields),
         remove: (id: string) => LivingAppsService.deleteReparaturauftraegeEntry(id),
       };
-      case 'teilelager': return {
-        create: (fields: any) => LivingAppsService.createTeilelagerEntry(fields),
-        update: (id: string, fields: any) => LivingAppsService.updateTeilelagerEntry(id, fields),
-        remove: (id: string) => LivingAppsService.deleteTeilelagerEntry(id),
+      case 'lager': return {
+        create: (fields: any) => LivingAppsService.createLagerEntry(fields),
+        update: (id: string, fields: any) => LivingAppsService.updateLagerEntry(id, fields),
+        remove: (id: string) => LivingAppsService.deleteLagerEntry(id),
       };
       default: return null;
     }
@@ -697,14 +697,14 @@ export default function AdminPage() {
           enablePhotoLocation={AI_PHOTO_LOCATION['Reparaturauftraege']}
         />
       )}
-      {(createEntity === 'teilelager' || dialogState?.entity === 'teilelager') && (
-        <TeilelagerDialog
-          open={createEntity === 'teilelager' || dialogState?.entity === 'teilelager'}
+      {(createEntity === 'lager' || dialogState?.entity === 'lager') && (
+        <LagerDialog
+          open={createEntity === 'lager' || dialogState?.entity === 'lager'}
           onClose={() => { setCreateEntity(null); setDialogState(null); }}
-          onSubmit={dialogState?.entity === 'teilelager' ? handleUpdate : (fields: any) => handleCreate('teilelager', fields)}
-          defaultValues={dialogState?.entity === 'teilelager' ? dialogState.record?.fields : undefined}
-          enablePhotoScan={AI_PHOTO_SCAN['Teilelager']}
-          enablePhotoLocation={AI_PHOTO_LOCATION['Teilelager']}
+          onSubmit={dialogState?.entity === 'lager' ? handleUpdate : (fields: any) => handleCreate('lager', fields)}
+          defaultValues={dialogState?.entity === 'lager' ? dialogState.record?.fields : undefined}
+          enablePhotoScan={AI_PHOTO_SCAN['Lager']}
+          enablePhotoLocation={AI_PHOTO_LOCATION['Lager']}
         />
       )}
       {viewState?.entity === 'leihvorgaenge' && (
@@ -743,12 +743,12 @@ export default function AdminPage() {
           kundenList={(data as any).kunden ?? []}
         />
       )}
-      {viewState?.entity === 'teilelager' && (
-        <TeilelagerViewDialog
-          open={viewState?.entity === 'teilelager'}
+      {viewState?.entity === 'lager' && (
+        <LagerViewDialog
+          open={viewState?.entity === 'lager'}
           onClose={() => setViewState(null)}
           record={viewState?.record}
-          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'teilelager', record: r }); }}
+          onEdit={(r: any) => { setViewState(null); setDialogState({ entity: 'lager', record: r }); }}
         />
       )}
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Lager } from '@/types/app';
 import { LivingAppsService } from '@/services/livingAppsService';
 import { t } from '@/i18n';
 
@@ -18,25 +18,25 @@ export function useDashboardData() {
   const [leihraeder, setLeihraeder] = useState<Leihraeder[]>([]);
   const [kunden, setKunden] = useState<Kunden[]>([]);
   const [reparaturauftraege, setReparaturauftraege] = useState<Reparaturauftraege[]>([]);
-  const [teilelager, setTeilelager] = useState<Teilelager[]>([]);
+  const [lager, setLager] = useState<Lager[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+      const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, lagerData] = await Promise.all([
         LivingAppsService.getLeihvorgaenge(),
         LivingAppsService.getLeihraeder(),
         LivingAppsService.getKunden(),
         LivingAppsService.getReparaturauftraege(),
-        LivingAppsService.getTeilelager(),
+        LivingAppsService.getLager(),
       ]);
       setLeihvorgaenge(leihvorgaengeData);
       setLeihraeder(leihraederData);
       setKunden(kundenData);
       setReparaturauftraege(reparaturauftraegeData);
-      setTeilelager(teilelagerData);
+      setLager(lagerData);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(t('data_load_failed')));
     } finally {
@@ -50,18 +50,18 @@ export function useDashboardData() {
   useEffect(() => {
     async function silentRefresh() {
       try {
-        const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+        const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, lagerData] = await Promise.all([
           LivingAppsService.getLeihvorgaenge(),
           LivingAppsService.getLeihraeder(),
           LivingAppsService.getKunden(),
           LivingAppsService.getReparaturauftraege(),
-          LivingAppsService.getTeilelager(),
+          LivingAppsService.getLager(),
         ]);
         setLeihvorgaenge(leihvorgaengeData);
         setLeihraeder(leihraederData);
         setKunden(kundenData);
         setReparaturauftraege(reparaturauftraegeData);
-        setTeilelager(teilelagerData);
+        setLager(lagerData);
       } catch {
         // silently ignore — stale data is better than no data
       }
@@ -83,5 +83,5 @@ export function useDashboardData() {
     return m;
   }, [kunden]);
 
-  return { leihvorgaenge, setLeihvorgaenge, leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, teilelager, setTeilelager, loading, error, fetchAll, leihraederMap, kundenMap };
+  return { leihvorgaenge, setLeihvorgaenge, leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, lager, setLager, loading, error, fetchAll, leihraederMap, kundenMap };
 }

@@ -108,7 +108,7 @@ export interface Reparaturauftraege {
   };
 }
 
-export interface Teilelager {
+export interface Lager {
   record_id: string;
   /** The API field. */
   created_at: string;
@@ -131,7 +131,7 @@ export const APP_IDS = {
   LEIHRAEDER: '6a893fdc641de8c47248bb48',
   KUNDEN: '6a89381649b1e4adfb583623',
   REPARATURAUFTRAEGE: '6a893819520245c43dad9f5e',
-  TEILELAGER: '6a8938194cf2973db816a8b8',
+  LAGER: '6a8938194cf2973db816a8b8',
 } as const;
 
 
@@ -140,7 +140,7 @@ export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: 
     status: [{ key: "aktiv", get label() { return lookupLabel('leihvorgaenge', 'status', "aktiv") ?? "Aktiv"; } }, { key: "zurueckgegeben", get label() { return lookupLabel('leihvorgaenge', 'status', "zurueckgegeben") ?? "Zurückgegeben"; } }, { key: "ueberfaellig", get label() { return lookupLabel('leihvorgaenge', 'status', "ueberfaellig") ?? "Überfällig"; } }],
   },
   'leihraeder': {
-    groesse: [{ key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }, { key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }],
+    groesse: [{ key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }, { key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }],
   },
   'reparaturauftraege': {
     status: [{ key: "angenommen", get label() { return lookupLabel('reparaturauftraege', 'status', "angenommen") ?? "Angenommen"; } }, { key: "in_arbeit", get label() { return lookupLabel('reparaturauftraege', 'status', "in_arbeit") ?? "In Arbeit"; } }, { key: "fertig", get label() { return lookupLabel('reparaturauftraege', 'status', "fertig") ?? "Fertig"; } }, { key: "abgeholt", get label() { return lookupLabel('reparaturauftraege', 'status', "abgeholt") ?? "Abgeholt"; } }],
@@ -188,7 +188,7 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'abgabedatum': 'date/date',
     'status': 'lookup/radio',
   },
-  'teilelager': {
+  'lager': {
     'bezeichnung': 'string/text',
     'lagerbestand': 'number',
     'preis': 'number',
@@ -215,7 +215,7 @@ export type CreateLeihvorgaenge = StripLookup<Leihvorgaenge['fields']>;
 export type CreateLeihraeder = StripLookup<Leihraeder['fields']>;
 export type CreateKunden = StripLookup<Kunden['fields']>;
 export type CreateReparaturauftraege = StripLookup<Reparaturauftraege['fields']>;
-export type CreateTeilelager = StripLookup<Teilelager['fields']>;
+export type CreateLager = StripLookup<Lager['fields']>;
 ```
 
 ## src/services/livingAppsService.ts
@@ -223,7 +223,7 @@ export type CreateTeilelager = StripLookup<Teilelager['fields']>;
 // AUTOMATICALLY GENERATED SERVICE
 import { APP_IDS, LOOKUP_OPTIONS, FIELD_TYPES } from '@/types/app';
 import { ensureUploadableImage } from '@/lib/ai';
-import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager, CreateLeihvorgaenge, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateTeilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Lager, CreateLeihvorgaenge, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateLager } from '@/types/app';
 
 // Base Configuration
 const API_BASE_URL = 'https://my.living-apps.de/rest';
@@ -716,30 +716,30 @@ export class LivingAppsService {
     return callApi('DELETE', `/apps/${APP_IDS.REPARATURAUFTRAEGE}/records/${id}`);
   }
 
-  // --- TEILELAGER ---
-  static async getTeilelager(): Promise<Teilelager[]> {
-    const data = await callApi('GET', `/apps/${APP_IDS.TEILELAGER}/records`);
+  // --- LAGER ---
+  static async getLager(): Promise<Lager[]> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LAGER}/records`);
     const records = Object.entries(data).map(([id, rec]: [string, any]) => ({
       record_id: id, ...rec,
       createdat: rec.created_at ?? '', updatedat: rec.updated_at ?? null,
-    })) as Teilelager[];
-    return hydrateRecords(records, 'teilelager');
+    })) as Lager[];
+    return hydrateRecords(records, 'lager');
   }
-  static async getTeilelagerEntry(id: string): Promise<Teilelager | undefined> {
-    const data = await callApi('GET', `/apps/${APP_IDS.TEILELAGER}/records/${id}`);
-    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Teilelager;
-    return hydrateRecords([record], 'teilelager')[0];
+  static async getLagerEntry(id: string): Promise<Lager | undefined> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LAGER}/records/${id}`);
+    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Lager;
+    return hydrateRecords([record], 'lager')[0];
   }
-  static async createTeilelagerEntry(fields: CreateTeilelager): Promise<MutationResult> {
-    const data = await callApi('POST', `/apps/${APP_IDS.TEILELAGER}/records`, { fields: cleanFieldsForApi(fields as any, 'teilelager') });
+  static async createLagerEntry(fields: CreateLager): Promise<MutationResult> {
+    const data = await callApi('POST', `/apps/${APP_IDS.LAGER}/records`, { fields: cleanFieldsForApi(fields as any, 'lager') });
     return { ...data, record_id: data.id };
   }
-  static async updateTeilelagerEntry(id: string, fields: Partial<CreateTeilelager>): Promise<MutationResult> {
-    const data = await callApi('PATCH', `/apps/${APP_IDS.TEILELAGER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'teilelager') });
+  static async updateLagerEntry(id: string, fields: Partial<CreateLager>): Promise<MutationResult> {
+    const data = await callApi('PATCH', `/apps/${APP_IDS.LAGER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'lager') });
     return { ...data, record_id: data.id };
   }
-  static async deleteTeilelagerEntry(id: string) {
-    return callApi('DELETE', `/apps/${APP_IDS.TEILELAGER}/records/${id}`);
+  static async deleteLagerEntry(id: string) {
+    return callApi('DELETE', `/apps/${APP_IDS.LAGER}/records/${id}`);
   }
 
 }
@@ -767,8 +767,8 @@ import KundenPage from '@/pages/KundenPage';
 import KundenDetailPage from '@/pages/KundenDetailPage';
 import ReparaturauftraegePage from '@/pages/ReparaturauftraegePage';
 import ReparaturauftraegeDetailPage from '@/pages/ReparaturauftraegeDetailPage';
-import TeilelagerPage from '@/pages/TeilelagerPage';
-import TeilelagerDetailPage from '@/pages/TeilelagerDetailPage';
+import LagerPage from '@/pages/LagerPage';
+import LagerDetailPage from '@/pages/LagerDetailPage';
 // <custom:imports>
 const IntentAuftragAnlegenPage = lazy(() => import('@/pages/intents/AuftragAnlegenPage'));
 const IntentAuftragAbschliessenPage = lazy(() => import('@/pages/intents/AuftragAbschliessenPage'));
@@ -819,8 +819,8 @@ export default function App() {
                 <Route path="kunden/:id" element={<KundenDetailPage />} />
                 <Route path="reparaturauftraege" element={<ReparaturauftraegePage />} />
                 <Route path="reparaturauftraege/:id" element={<ReparaturauftraegeDetailPage />} />
-                <Route path="teilelager" element={<TeilelagerPage />} />
-                <Route path="teilelager/:id" element={<TeilelagerDetailPage />} />
+                <Route path="lager" element={<LagerPage />} />
+                <Route path="lager/:id" element={<LagerDetailPage />} />
                 <Route path="admin" element={<AdminPage />} />
                 <Route path="verwaltung/oeffentliche-seiten" element={<PublicPagesAdmin />} />
                 {/* <custom:routes> */}
@@ -1044,7 +1044,7 @@ export function Layout() {
 ## src/hooks/useDashboardData.ts
 ```
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Lager } from '@/types/app';
 import { LivingAppsService } from '@/services/livingAppsService';
 import { t } from '@/i18n';
 
@@ -1063,25 +1063,25 @@ export function useDashboardData() {
   const [leihraeder, setLeihraeder] = useState<Leihraeder[]>([]);
   const [kunden, setKunden] = useState<Kunden[]>([]);
   const [reparaturauftraege, setReparaturauftraege] = useState<Reparaturauftraege[]>([]);
-  const [teilelager, setTeilelager] = useState<Teilelager[]>([]);
+  const [lager, setLager] = useState<Lager[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchAll = useCallback(async () => {
     setError(null);
     try {
-      const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+      const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, lagerData] = await Promise.all([
         LivingAppsService.getLeihvorgaenge(),
         LivingAppsService.getLeihraeder(),
         LivingAppsService.getKunden(),
         LivingAppsService.getReparaturauftraege(),
-        LivingAppsService.getTeilelager(),
+        LivingAppsService.getLager(),
       ]);
       setLeihvorgaenge(leihvorgaengeData);
       setLeihraeder(leihraederData);
       setKunden(kundenData);
       setReparaturauftraege(reparaturauftraegeData);
-      setTeilelager(teilelagerData);
+      setLager(lagerData);
     } catch (err) {
       setError(err instanceof Error ? err : new Error(t('data_load_failed')));
     } finally {
@@ -1095,18 +1095,18 @@ export function useDashboardData() {
   useEffect(() => {
     async function silentRefresh() {
       try {
-        const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, teilelagerData] = await Promise.all([
+        const [leihvorgaengeData, leihraederData, kundenData, reparaturauftraegeData, lagerData] = await Promise.all([
           LivingAppsService.getLeihvorgaenge(),
           LivingAppsService.getLeihraeder(),
           LivingAppsService.getKunden(),
           LivingAppsService.getReparaturauftraege(),
-          LivingAppsService.getTeilelager(),
+          LivingAppsService.getLager(),
         ]);
         setLeihvorgaenge(leihvorgaengeData);
         setLeihraeder(leihraederData);
         setKunden(kundenData);
         setReparaturauftraege(reparaturauftraegeData);
-        setTeilelager(teilelagerData);
+        setLager(lagerData);
       } catch {
         // silently ignore — stale data is better than no data
       }
@@ -1128,7 +1128,7 @@ export function useDashboardData() {
     return m;
   }, [kunden]);
 
-  return { leihvorgaenge, setLeihvorgaenge, leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, teilelager, setTeilelager, loading, error, fetchAll, leihraederMap, kundenMap };
+  return { leihvorgaenge, setLeihvorgaenge, leihraeder, setLeihraeder, kunden, setKunden, reparaturauftraege, setReparaturauftraege, lager, setLager, loading, error, fetchAll, leihraederMap, kundenMap };
 }
 ```
 

@@ -178,6 +178,11 @@ export function VersionCheck() {
   // läuft, ERSETZT die Build-Karte den Update-Button — ein Klick würde
   // ohnehin nur im Ein-Platz-Slot vorgemerkt.
   const [buildPct, setBuildPct] = useState<number | null>(null);
+  // Fehlerzustand nur für Builds, die WIR laufen sahen — ein uralter
+  // failed-Stand in agent_states darf beim Seitenladen keine rote Karte
+  // erzeugen. Verschwindet, sobald der nächste Build startet.
+  const [buildFailed, setBuildFailed] = useState(false);
+  const sawBuilding = useRef(false);
   const baselineRef = useRef<DeployedVersion | null>(null);
   const freshNotified = useRef(false);
 
@@ -255,10 +260,13 @@ export function VersionCheck() {
         if (!res.ok) throw new Error(String(res.status));
         const state: { build_status?: string | null; build_pct?: number | null } = await res.json();
         if (state.build_status === 'building') {
+          sawBuilding.current = true;
+          setBuildFailed(false);
           setBuildPct(typeof state.build_pct === 'number' ? state.build_pct : 0);
           next = BUILD_ACTIVE_POLL_MS;
         } else {
           setBuildPct(null);
+          setBuildFailed(state.build_status === 'failed' && sawBuilding.current);
           if (!freshNotified.current && baselineRef.current?.codebase) {
             const now = await fetchDeployedVersion();
             if (now?.codebase && now.codebase !== baselineRef.current.codebase) {
@@ -487,6 +495,15 @@ export function VersionCheck() {
           <div className="mt-1.5 h-1 rounded-full bg-[#bfdbfe]/60 overflow-hidden">
             <div className="h-full bg-[#2563eb] rounded-full transition-all duration-500" style={{ width: `${buildPct}%` }} />
           </div>
+        </div>
+      )}
+
+      {/* Fehlerzustand: ein beobachteter Build ist gescheitert — die
+          Änderung ist NICHT im Dashboard. Verschwindet mit dem nächsten
+          Build-Start. */}
+      {buildFailed && buildPct === null && !showPanel && (
+        <div className="mx-3 mt-1 px-3 py-1.5 w-[calc(100%-1.5rem)] rounded-lg text-xs text-destructive bg-destructive/10">
+          {t('vc_build_failed')}
         </div>
       )}
 

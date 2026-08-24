@@ -150,16 +150,16 @@
             "required": false,
             "options": [
               {
-                "key": "s",
-                "label": "S"
-              },
-              {
                 "key": "m",
                 "label": "M"
               },
               {
                 "key": "l",
                 "label": "L"
+              },
+              {
+                "key": "s",
+                "label": "S"
               }
             ]
           },
@@ -319,8 +319,8 @@
       }
     },
     {
-      "file": "src/components/dialogs/TeilelagerDialog.tsx",
-      "entity": "Teilelager",
+      "file": "src/components/dialogs/LagerDialog.tsx",
+      "entity": "Lager",
       "entity_context": "Fahrradwerkstatt Verwaltung",
       "fields": [
         {
@@ -345,7 +345,7 @@
         }
       ],
       "formEnhancements": {
-        "configPath": "src/config/form-enhancements/Teilelager.ts",
+        "configPath": "src/config/form-enhancements/Lager.ts",
         "fields": [
           {
             "key": "bezeichnung",

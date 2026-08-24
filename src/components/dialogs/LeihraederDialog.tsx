@@ -272,7 +272,7 @@ export function LeihraederDialog({ open, onClose, onSubmit, defaultValues, recor
         }
       }
       const photoContext = contextParts.length ? contextParts.join('\n') : undefined;
-      const schema = `{\n  "rahmennummer": string | null, // Rahmennummer\n  "groesse": LookupValue | null, // Größe (select one key: "s" | "m" | "l") mapping: s=S, m=M, l=L\n  "tagespreis": number | null, // Tagespreis (€)\n  "verliehen_an": string | null, // Display name from Kunden (see <available-records>)\n}`;
+      const schema = `{\n  "rahmennummer": string | null, // Rahmennummer\n  "groesse": LookupValue | null, // Größe (select one key: "m" | "l" | "s") mapping: m=M, l=L, s=S\n  "tagespreis": number | null, // Tagespreis (€)\n  "verliehen_an": string | null, // Display name from Kunden (see <available-records>)\n}`;
       const raw = await extractFromInput<Record<string, unknown>>(schema, {
         dataUri: uri,
         userText: aiText.trim() || undefined,
@@ -443,19 +443,6 @@ export function LeihraederDialog({ open, onClose, onSubmit, defaultValues, recor
           <button
             type="button"
             role="radio"
-            aria-checked={lookupKey(fields.groesse) === 's'}
-            onClick={() => setFields(f => ({ ...f, groesse: (lookupKey(f.groesse) === 's' ? undefined : 's') as any }))}
-            className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-              lookupKey(fields.groesse) === 's'
-                ? 'bg-foreground text-background border-foreground'
-                : 'bg-background text-foreground border-input hover:bg-accent'
-            }`}
-          >
-            {lookupLabel('leihraeder', 'groesse', 's') ?? 'S'}
-          </button>
-          <button
-            type="button"
-            role="radio"
             aria-checked={lookupKey(fields.groesse) === 'm'}
             onClick={() => setFields(f => ({ ...f, groesse: (lookupKey(f.groesse) === 'm' ? undefined : 'm') as any }))}
             className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
@@ -478,6 +465,19 @@ export function LeihraederDialog({ open, onClose, onSubmit, defaultValues, recor
             }`}
           >
             {lookupLabel('leihraeder', 'groesse', 'l') ?? 'L'}
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={lookupKey(fields.groesse) === 's'}
+            onClick={() => setFields(f => ({ ...f, groesse: (lookupKey(f.groesse) === 's' ? undefined : 's') as any }))}
+            className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+              lookupKey(fields.groesse) === 's'
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-background text-foreground border-input hover:bg-accent'
+            }`}
+          >
+            {lookupLabel('leihraeder', 'groesse', 's') ?? 'S'}
           </button>
         </div>
       </div>

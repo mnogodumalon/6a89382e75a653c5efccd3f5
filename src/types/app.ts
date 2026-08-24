@@ -103,7 +103,7 @@ export interface Reparaturauftraege {
   };
 }
 
-export interface Teilelager {
+export interface Lager {
   record_id: string;
   /** The API field. */
   created_at: string;
@@ -126,7 +126,7 @@ export const APP_IDS = {
   LEIHRAEDER: '6a893fdc641de8c47248bb48',
   KUNDEN: '6a89381649b1e4adfb583623',
   REPARATURAUFTRAEGE: '6a893819520245c43dad9f5e',
-  TEILELAGER: '6a8938194cf2973db816a8b8',
+  LAGER: '6a8938194cf2973db816a8b8',
 } as const;
 
 
@@ -135,7 +135,7 @@ export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: 
     status: [{ key: "aktiv", get label() { return lookupLabel('leihvorgaenge', 'status', "aktiv") ?? "Aktiv"; } }, { key: "zurueckgegeben", get label() { return lookupLabel('leihvorgaenge', 'status', "zurueckgegeben") ?? "Zurückgegeben"; } }, { key: "ueberfaellig", get label() { return lookupLabel('leihvorgaenge', 'status', "ueberfaellig") ?? "Überfällig"; } }],
   },
   'leihraeder': {
-    groesse: [{ key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }, { key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }],
+    groesse: [{ key: "m", get label() { return lookupLabel('leihraeder', 'groesse', "m") ?? "M"; } }, { key: "l", get label() { return lookupLabel('leihraeder', 'groesse', "l") ?? "L"; } }, { key: "s", get label() { return lookupLabel('leihraeder', 'groesse', "s") ?? "S"; } }],
   },
   'reparaturauftraege': {
     status: [{ key: "angenommen", get label() { return lookupLabel('reparaturauftraege', 'status', "angenommen") ?? "Angenommen"; } }, { key: "in_arbeit", get label() { return lookupLabel('reparaturauftraege', 'status', "in_arbeit") ?? "In Arbeit"; } }, { key: "fertig", get label() { return lookupLabel('reparaturauftraege', 'status', "fertig") ?? "Fertig"; } }, { key: "abgeholt", get label() { return lookupLabel('reparaturauftraege', 'status', "abgeholt") ?? "Abgeholt"; } }],
@@ -183,7 +183,7 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'abgabedatum': 'date/date',
     'status': 'lookup/radio',
   },
-  'teilelager': {
+  'lager': {
     'bezeichnung': 'string/text',
     'lagerbestand': 'number',
     'preis': 'number',
@@ -210,4 +210,4 @@ export type CreateLeihvorgaenge = StripLookup<Leihvorgaenge['fields']>;
 export type CreateLeihraeder = StripLookup<Leihraeder['fields']>;
 export type CreateKunden = StripLookup<Kunden['fields']>;
 export type CreateReparaturauftraege = StripLookup<Reparaturauftraege['fields']>;
-export type CreateTeilelager = StripLookup<Teilelager['fields']>;
+export type CreateLager = StripLookup<Lager['fields']>;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LivingAppsService, extractRecordId, createRecordUrl } from '@/services/livingAppsService';
-import type { Teilelager } from '@/types/app';
+import type { Lager } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,20 +10,20 @@ import {
   TableHeader, TableRow,
 } from '@/components/ui/table';
 import { IconPencil, IconTrash, IconPlus, IconSearch, IconArrowsUpDown, IconArrowUp, IconArrowDown } from '@tabler/icons-react';
-import { TeilelagerDialog } from '@/components/dialogs/TeilelagerDialog';
+import { LagerDialog } from '@/components/dialogs/LagerDialog';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
 import { PageShell } from '@/components/PageShell';
 import { AI_PHOTO_SCAN, AI_PHOTO_LOCATION } from '@/config/ai-features';
 import { t, appLabel, fieldLabel, lookupLabel } from '@/i18n';
 
-export default function TeilelagerPage() {
+export default function LagerPage() {
   const navigate = useNavigate();
-  const [records, setRecords] = useState<Teilelager[]>([]);
+  const [records, setRecords] = useState<Lager[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRecord, setEditingRecord] = useState<Teilelager | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Teilelager | null>(null);
+  const [editingRecord, setEditingRecord] = useState<Lager | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Lager | null>(null);
   const [sortKey, setSortKey] = useState('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
 
@@ -32,28 +32,28 @@ export default function TeilelagerPage() {
   async function loadData() {
     setLoading(true);
     try {
-      setRecords(await LivingAppsService.getTeilelager());
+      setRecords(await LivingAppsService.getLager());
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleCreate(fields: Teilelager['fields']) {
-    await LivingAppsService.createTeilelagerEntry(fields);
+  async function handleCreate(fields: Lager['fields']) {
+    await LivingAppsService.createLagerEntry(fields);
     await loadData();
     setDialogOpen(false);
   }
 
-  async function handleUpdate(fields: Teilelager['fields']) {
+  async function handleUpdate(fields: Lager['fields']) {
     if (!editingRecord) return;
-    await LivingAppsService.updateTeilelagerEntry(editingRecord.record_id, fields);
+    await LivingAppsService.updateLagerEntry(editingRecord.record_id, fields);
     await loadData();
     setEditingRecord(null);
   }
 
   async function handleDelete() {
     if (!deleteTarget) return;
-    await LivingAppsService.deleteTeilelagerEntry(deleteTarget.record_id);
+    await LivingAppsService.deleteLagerEntry(deleteTarget.record_id);
     setRecords(prev => prev.filter(r => r.record_id !== deleteTarget.record_id));
     setDeleteTarget(null);
   }
@@ -178,14 +178,14 @@ export default function TeilelagerPage() {
         </Table>
       </div>
 
-      <TeilelagerDialog
+      <LagerDialog
         open={dialogOpen || !!editingRecord}
         onClose={() => { setDialogOpen(false); setEditingRecord(null); }}
         onSubmit={editingRecord ? handleUpdate : handleCreate}
         defaultValues={editingRecord?.fields}
         recordId={editingRecord?.record_id}
-        enablePhotoScan={AI_PHOTO_SCAN['Teilelager']}
-        enablePhotoLocation={AI_PHOTO_LOCATION['Teilelager']}
+        enablePhotoScan={AI_PHOTO_SCAN['Lager']}
+        enablePhotoLocation={AI_PHOTO_LOCATION['Lager']}
       />
 
       <ConfirmDialog

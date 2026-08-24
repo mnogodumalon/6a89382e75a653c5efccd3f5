@@ -29,7 +29,7 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   ✚ EnrichedLeihvorgaenge adds ONLY leihradName, kundeName — via enrichLeihvorgaenge(leihvorgaenge, { leihraederMap, kundenMap }), all maps required
   → leihrad links to app_id 6a893fdc641de8c47248bb48
   → kunde links to app_id 6a89381649b1e4adfb583623
-- Leihräder (leihraeder): bild_fahrrad[file], rahmennummer![string/text], groesse[lookup/select: s|m|l], tagespreis[number], verliehen_an[applookup/select]
+- Leihräder (leihraeder): bild_fahrrad[file], rahmennummer![string/text], groesse[lookup/select: m|l|s], tagespreis[number], verliehen_an[applookup/select]
   ⚙ getLeihraeder() · getLeihraederEntry(id) · createLeihraederEntry(fields) · updateLeihraederEntry(id, fields) · deleteLeihraederEntry(id)
   ✚ EnrichedLeihraeder adds ONLY verliehen_anName — via enrichLeihraeder(leihraeder, { kundenMap }), all maps required
   → verliehen_an links to app_id 6a89381649b1e4adfb583623
@@ -39,5 +39,5 @@ createRecordUrl from the service. Note the lowercase `l` in the service path.
   ⚙ getReparaturauftraege() · getReparaturauftraegeEntry(id) · createReparaturauftraegeEntry(fields) · updateReparaturauftraegeEntry(id, fields) · deleteReparaturauftraegeEntry(id)
   ✚ EnrichedReparaturauftraege adds ONLY kundeName — via enrichReparaturauftraege(reparaturauftraege, { kundenMap }), all maps required
   → kunde links to app_id 6a89381649b1e4adfb583623
-- Teilelager (teilelager): bezeichnung![string/text], lagerbestand![number], preis![number], mindestbestand[number]
-  ⚙ getTeilelager() · getTeilelagerEntry(id) · createTeilelagerEntry(fields) · updateTeilelagerEntry(id, fields) · deleteTeilelagerEntry(id)
+- Lager (lager): bezeichnung![string/text], lagerbestand![number], preis![number], mindestbestand[number]
+  ⚙ getLager() · getLagerEntry(id) · createLagerEntry(fields) · updateLagerEntry(id, fields) · deleteLagerEntry(id)

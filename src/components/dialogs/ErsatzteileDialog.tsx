@@ -13,7 +13,7 @@
  *  ✓ useState<ErsatzteileDialogDefaults | undefined>(undefined)
  */
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import type { Teilelager } from '@/types/app';
+import type { Lager } from '@/types/app';
 import { APP_IDS } from '@/types/app';
 import { extractRecordId, createRecordUrl, cleanFieldsForApi, getUserProfile } from '@/services/livingAppsService';
 import {
@@ -34,12 +34,12 @@ import { IconAlertCircle, IconCamera, IconChevronDown, IconCircleCheck, IconClip
 import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode } from '@/lib/ai';
 
 /** Widened prefill type for ErsatzteileDialog.defaultValues — see file header. */
-export type ErsatzteileDialogDefaults = Teilelager['fields'];
+export type ErsatzteileDialogDefaults = Lager['fields'];
 
 interface ErsatzteileDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (fields: Teilelager['fields']) => Promise<void>;
+  onSubmit: (fields: Lager['fields']) => Promise<void>;
   /** SHAPE-TOLERANT: lookup fields accept the bare key (string) or the
    *  LookupValue object; applookup fields the bare record id or the full
    *  record URL — the dialog normalizes both. */
@@ -51,7 +51,7 @@ interface ErsatzteileDialogProps {
 }
 
 export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, recordId, enablePhotoScan = true, enablePhotoLocation = true }: ErsatzteileDialogProps) {
-  const [fields, setFields] = useState<Partial<Teilelager['fields']>>({});
+  const [fields, setFields] = useState<Partial<Lager['fields']>>({});
   const [saving, setSaving] = useState(false);
   const normalizedDefaults = defaultValues as Record<string, unknown> | undefined;
   // Dirty-tracking: in edit-mode the Speichern button is disabled until the
@@ -120,7 +120,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
 
   useEffect(() => {
     if (open) {
-      setFields(applyDefaults(normalizedDefaults ?? {}, formEnhancements.defaults) as Partial<Teilelager['fields']>);
+      setFields(applyDefaults(normalizedDefaults ?? {}, formEnhancements.defaults) as Partial<Lager['fields']>);
       setPreview(null);
       setScanSuccess(false);
       setAiText('');
@@ -173,8 +173,8 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
           (merged as Record<string, unknown>)[key] = val;
         }
       }
-      const clean = cleanFieldsForApi(merged, 'teilelager');
-      await onSubmit(clean as Teilelager['fields']);
+      const clean = cleanFieldsForApi(merged, 'lager');
+      await onSubmit(clean as Lager['fields']);
       onClose();
     } catch (err) {
       setSubmitError(err instanceof Error && err.message ? err.message : t('submit_error'));
@@ -226,12 +226,12 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
         photoContext,
         intent: DIALOG_INTENT,
       });
-      setFields((prev: Partial<Teilelager['fields']>) => {
+      setFields((prev: Partial<Lager['fields']>) => {
         const merged = { ...prev } as Record<string, unknown>;
         for (const [k, v] of Object.entries(raw)) {
           if (v != null) merged[k] = v;
         }
-        return merged as Partial<Teilelager['fields']>;
+        return merged as Partial<Lager['fields']>;
       });
       setAiText('');
       setScanSuccess(true);
@@ -702,7 +702,7 @@ export function ErsatzteileDialog({ open, onClose, onSubmit, defaultValues, reco
             )}
             {recordId && (
               <div className="pt-2 border-t border-border">
-                <AttachmentsSection appId={APP_IDS.TEILELAGER} recordId={recordId} />
+                <AttachmentsSection appId={APP_IDS.LAGER} recordId={recordId} />
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 // AUTOMATICALLY GENERATED SERVICE
 import { APP_IDS, LOOKUP_OPTIONS, FIELD_TYPES } from '@/types/app';
 import { ensureUploadableImage } from '@/lib/ai';
-import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Teilelager, CreateLeihvorgaenge, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateTeilelager } from '@/types/app';
+import type { Leihvorgaenge, Leihraeder, Kunden, Reparaturauftraege, Lager, CreateLeihvorgaenge, CreateLeihraeder, CreateKunden, CreateReparaturauftraege, CreateLager } from '@/types/app';
 
 // Base Configuration
 const API_BASE_URL = 'https://my.living-apps.de/rest';
@@ -494,30 +494,30 @@ export class LivingAppsService {
     return callApi('DELETE', `/apps/${APP_IDS.REPARATURAUFTRAEGE}/records/${id}`);
   }
 
-  // --- TEILELAGER ---
-  static async getTeilelager(): Promise<Teilelager[]> {
-    const data = await callApi('GET', `/apps/${APP_IDS.TEILELAGER}/records`);
+  // --- LAGER ---
+  static async getLager(): Promise<Lager[]> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LAGER}/records`);
     const records = Object.entries(data).map(([id, rec]: [string, any]) => ({
       record_id: id, ...rec,
       createdat: rec.created_at ?? '', updatedat: rec.updated_at ?? null,
-    })) as Teilelager[];
-    return hydrateRecords(records, 'teilelager');
+    })) as Lager[];
+    return hydrateRecords(records, 'lager');
   }
-  static async getTeilelagerEntry(id: string): Promise<Teilelager | undefined> {
-    const data = await callApi('GET', `/apps/${APP_IDS.TEILELAGER}/records/${id}`);
-    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Teilelager;
-    return hydrateRecords([record], 'teilelager')[0];
+  static async getLagerEntry(id: string): Promise<Lager | undefined> {
+    const data = await callApi('GET', `/apps/${APP_IDS.LAGER}/records/${id}`);
+    const record = { record_id: data.id, ...data, createdat: data.created_at ?? '', updatedat: data.updated_at ?? null } as Lager;
+    return hydrateRecords([record], 'lager')[0];
   }
-  static async createTeilelagerEntry(fields: CreateTeilelager): Promise<MutationResult> {
-    const data = await callApi('POST', `/apps/${APP_IDS.TEILELAGER}/records`, { fields: cleanFieldsForApi(fields as any, 'teilelager') });
+  static async createLagerEntry(fields: CreateLager): Promise<MutationResult> {
+    const data = await callApi('POST', `/apps/${APP_IDS.LAGER}/records`, { fields: cleanFieldsForApi(fields as any, 'lager') });
     return { ...data, record_id: data.id };
   }
-  static async updateTeilelagerEntry(id: string, fields: Partial<CreateTeilelager>): Promise<MutationResult> {
-    const data = await callApi('PATCH', `/apps/${APP_IDS.TEILELAGER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'teilelager') });
+  static async updateLagerEntry(id: string, fields: Partial<CreateLager>): Promise<MutationResult> {
+    const data = await callApi('PATCH', `/apps/${APP_IDS.LAGER}/records/${id}`, { fields: cleanFieldsForApi(fields as any, 'lager') });
     return { ...data, record_id: data.id };
   }
-  static async deleteTeilelagerEntry(id: string) {
-    return callApi('DELETE', `/apps/${APP_IDS.TEILELAGER}/records/${id}`);
+  static async deleteLagerEntry(id: string) {
+    return callApi('DELETE', `/apps/${APP_IDS.LAGER}/records/${id}`);
   }
 
 }
